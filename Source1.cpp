@@ -1,4 +1,4 @@
-#include <iostream>
+п»ї#include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -30,27 +30,27 @@ int main()
         int N; // total number of players (2 to 4).
         int P; // your player number (0 to 3).
         cin >> N >> P; cin.ignore();
-        cerr << "ХОД " << move << endl;
-        //cerr << "Наш игрок "<< P << endl;
+        cerr << "STEAP " << move << endl << endl;
+        //cerr << "РќР°С€ Player "<< P << endl;
 
         for (int i = 0; i < N; i++) {
 
             cin >> X0 >> Y0 >> X1 >> Y1; cin.ignore();
             if (P == i) {
-                cerr << " -----ЭТО НАШ----- " << P << endl;
+                cerr << " -----THIS MY----- " << P << endl << endl;
 
-                cerr << "Игрок " << i << " стартоваяX " << X0 << endl;
-                cerr << "Игрок " << i << " стартоваяY " << Y0 << endl;
-                cerr << "Игрок " << i << " текущаяX " << X1 << endl;
-                cerr << "Игрок " << i << " текущаяX " << Y1 << endl;
+                cerr << "Player " << i << " Start_X " << X0 << endl;
+                cerr << "Player " << i << " Start_Y " << Y0 << endl;
+                cerr << "Player " << i << " Now_X " << X1 << endl;
+                cerr << "Player " << i << " Now_Y " << Y1 << endl << endl;
             }
             else {
-                cerr << " ---ENEMY--- " << endl;
+                cerr << " ---ENEMY--- " << endl << endl;
 
-                cerr << "Игрок " << i << " стартоваяX " << X0 << endl;
-                cerr << "Игрок " << i << " стартоваяY " << Y0 << endl;
-                cerr << "Игрок " << i << " текущаяX " << X1 << endl;
-                cerr << "Игрок " << i << " текущаяX " << Y1 << endl;
+                cerr << "Player " << i << " Start_X " << X0 << endl;
+                cerr << "Player " << i << " Start_Y " << Y0 << endl;
+                cerr << "Player " << i << " Now_X " << X1 << endl;
+                cerr << "Player " << i << " Now_Y " << Y1 << endl << endl;
 
             }
             if (PX == -100 && PY == -100)
@@ -58,7 +58,18 @@ int main()
                 PX = X0;
                 PY = Y0;
             }
+
         }
+        pole[PY][PX] = 2;
+        pole[Y1][X1] = 2;
+
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 30; j++) {
+                cerr << pole[i][j] << " ";
+            }
+            cerr << endl;
+        }
+
 
         // cout << "UP" << endl; // A single line with UP, DOWN, LEFT or RIGHT
         // Write an action using cout. DON'T FORGET THE "<< endl"
@@ -66,8 +77,9 @@ int main()
 
         if (PX <= 2)
         {
-            if (PY <= 2)    // if |_
+            if (PY <= 2)    // if |_ 1
             {
+                cerr << "if |_ 1" << endl;
                 cout << "RIGHT" << endl;
                 PX += 1;
                 cout << "UP" << endl;
@@ -76,15 +88,17 @@ int main()
                 continue;
             }
 
-            if (PY >= 3 && PY <= 17)   // if |
+            if (PY >= 3 && PY <= 17)   // if | 1
             {
+                cerr << "if | 1" << endl;
                 cout << "DOWN" << endl;
                 PY -= 1;
                 continue;
             }
 
-            if (PY >= 18)   // if |?
+            if (PY >= 18)   // if |вЂѕ 1
             {
+                cerr << "if | 1" << endl;
                 cout << "RIGHT" << endl;
                 PX += 1;
                 cout << "DOWN" << endl;
@@ -96,9 +110,9 @@ int main()
 
         if (PX >= 28)
         {
-            if (PY <= 2)    // if ?|
+            if (PY <= 2)    // if вЂѕ| 2
             {
-                cerr << "if ?|" << endl;
+                cerr << "if вЂѕ| 2" << endl;
                 cout << "LEFT" << endl;
                 PX -= 1;
                 cout << "DOWN" << endl;
@@ -106,16 +120,17 @@ int main()
                 continue;
             }
 
-            if (PY >= 3 && PY <= 17)   // if |
+            if (PY >= 3 && PY <= 17)   // if | 2
             {
-                cerr << "if |" << endl;
+                cerr << "if | 2" << endl;
                 cout << "UP" << endl;
                 PY += 1;
                 continue;
             }
-            if (PY >= 18)   // if _|  
+
+            if (PY >= 18)   // if _|  2
             {
-                cerr << "if |?" << endl;
+                cerr << "if _|  2" << endl;
                 cout << "LEFT" << endl;
                 PX -= 1;
                 cout << "UP" << endl;
@@ -128,9 +143,9 @@ int main()
         //hs
         if (PX >= 3 && PX <= 27)
         {
-            if (PY >= 18)   // if _  
+            if (PY >= 18)   // if _  3
             {
-                cerr << "if _" << endl;
+                cerr << "if _  3" << endl;
                 if (PX <= 4) {
                     cout << "LEFT" << endl;
                     PX -= 1;
@@ -142,9 +157,9 @@ int main()
 
                 continue;
             }
-            if (PY <= 2)    // if ?
+            if (PY <= 2)    // if вЂѕ 3
             {
-                cerr << "if ?" << endl;
+                cerr << "if вЂѕ 3" << endl;
                 if (PX <= 4) {
                     cout << "LEFT" << endl;
                     PX -= 1;
@@ -154,6 +169,8 @@ int main()
                     PX += 1;
                 }
             }
+
+            cerr << "if pofig" << endl;     // pofig
             cout << "RIGHT" << endl;
             PX += 1;
             continue;
