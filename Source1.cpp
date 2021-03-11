@@ -5,15 +5,9 @@
 
 using namespace std;
 
-/*
- * Auto-generated code below aims at helping you parse
- * the standard input according to the problem statement.
- */
-
 int main()
 {
     // game loop
-
     int X0; // starting X coordinate of lightcycle (or -1)
     int Y0; // starting Y coordinate of lightcycle (or -1)
     int X1; // starting X coordinate of lightcycle (can be the same as X0 if you play before this player)
@@ -21,7 +15,7 @@ int main()
 
     int pole[20][30] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                       0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };       // [higth][width]
+                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };       // [height][width]
     int PX = -100;
     int PY = -100;
     int move = 0;
@@ -30,7 +24,7 @@ int main()
         int N; // total number of players (2 to 4).
         int P; // your player number (0 to 3).
         cin >> N >> P; cin.ignore();
-        cerr << "STEAP " << move << endl << endl;
+        cerr << "STEP " << move << endl << endl;
         //cerr << "Наш Player "<< P << endl;
 
         for (int i = 0; i < N; i++) {
@@ -170,7 +164,7 @@ int main()
                 }
             }
 
-            cerr << "if pofig" << endl;     // pofig
+            cerr << "default" << endl;     // pofig
             cout << "RIGHT" << endl;
             PX += 1;
             continue;
