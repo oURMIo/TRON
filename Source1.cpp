@@ -44,10 +44,10 @@ int main()
         for (int i = 0; i < N; i++) {
             cin >> X0 >> Y0 >> X1 >> Y1; cin.ignore();
             // инициализируем i-го игрока.
-            player[i].x = X1;
-            player[i].y = y1;
+            players[i].x = X1;
+            players[i].y = y1;
             // меняем 0 на доске, на id игрока.
-            pole[x][y] = i;
+            pole[Y1][X1] = i + 1;
 
             // ВЫВОД игрока (Убрать в функцию)
             if (P == i) {
@@ -57,8 +57,8 @@ int main()
                 cerr << " ---ENEMY--- " << endl << endl;
             }
 
-            cerr << "Player " << i << " Now_X " << player[i].x << endl;
-            cerr << "Player " << i << " Now_Y " << player[i].y << endl;
+            cerr << "Player " << i << " Now_X " << players[i].x << endl;
+            cerr << "Player " << i << " Now_Y " << players[i].y << endl;
         }
 
         // ВЫВОД поля (Убрать в функцию)
@@ -69,8 +69,8 @@ int main()
             cerr << endl;
         }
         // Проинициализируем для совместимости прежние переменные.
-        PX = player[P].x;
-        PY = player[P].y;
+        PX = players[P].x;
+        PY = players[P].y;
 
         if (PX <= 2)
         {
