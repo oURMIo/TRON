@@ -5,6 +5,18 @@
 
 using namespace std;
 
+class Player{
+    public:
+        int x;
+        int y;
+};
+
+
+
+// cout << "UP" << endl; // A single line with UP, DOWN, LEFT or RIGHT
+// Write an action using cout. DON'T FORGET THE "<< endl"
+// To debug: cerr << "Debug messages..." << endl;
+
 int main()
 {
     // game loop
@@ -13,12 +25,14 @@ int main()
     int X1; // starting X coordinate of lightcycle (can be the same as X0 if you play before this player)
     int Y1; // starting Y coordinate of lightcycle (can be the same as Y0 if you play before this player)
 
-    int pole[20][30] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };       // [height][width]
+    int pole[20][30] = { };       // [height][width]
     int PX = -100;
     int PY = -100;
     int move = 0;
+
+    // раз может быть от 2 до 4 - создадим массив на всех!
+    Player players[4];
+
     while (1) {
         move++;
         int N; // total number of players (2 to 4).
@@ -28,46 +42,35 @@ int main()
         //cerr << "Наш Player "<< P << endl;
 
         for (int i = 0; i < N; i++) {
-
             cin >> X0 >> Y0 >> X1 >> Y1; cin.ignore();
+            // инициализируем i-го игрока.
+            player[i].x = X1;
+            player[i].y = y1;
+            // меняем 0 на доске, на id игрока.
+            pole[x][y] = i;
+
+            // ВЫВОД игрока (Убрать в функцию)
             if (P == i) {
                 cerr << " -----THIS MY----- " << P << endl << endl;
-
-                cerr << "Player " << i << " Start_X " << X0 << endl;
-                cerr << "Player " << i << " Start_Y " << Y0 << endl;
-                cerr << "Player " << i << " Now_X " << X1 << endl;
-                cerr << "Player " << i << " Now_Y " << Y1 << endl << endl;
             }
             else {
                 cerr << " ---ENEMY--- " << endl << endl;
-
-                cerr << "Player " << i << " Start_X " << X0 << endl;
-                cerr << "Player " << i << " Start_Y " << Y0 << endl;
-                cerr << "Player " << i << " Now_X " << X1 << endl;
-                cerr << "Player " << i << " Now_Y " << Y1 << endl << endl;
-
-            }
-            if (PX == -100 && PY == -100)
-            {
-                PX = X0;
-                PY = Y0;
             }
 
+            cerr << "Player " << i << " Now_X " << player[i].x << endl;
+            cerr << "Player " << i << " Now_Y " << player[i].y << endl;
         }
-        pole[PY][PX] = 2;
-        pole[Y1][X1] = 2;
 
+        // ВЫВОД поля (Убрать в функцию)
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 30; j++) {
                 cerr << pole[i][j] << " ";
             }
             cerr << endl;
         }
-
-
-        // cout << "UP" << endl; // A single line with UP, DOWN, LEFT or RIGHT
-        // Write an action using cout. DON'T FORGET THE "<< endl"
-        // To debug: cerr << "Debug messages..." << endl;
+        // Проинициализируем для совместимости прежние переменные.
+        PX = player[P].x;
+        PY = player[P].y;
 
         if (PX <= 2)
         {
