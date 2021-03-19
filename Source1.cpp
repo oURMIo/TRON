@@ -9,9 +9,75 @@ class Player{
     public:
         int x;
         int y;
+        int moveIndex;
 };
 
 
+// глобальные переменные ЗЛО! НО очень удобны для таких мелких программ =)
+int pole[30/*x*/][20/*y*/] = { };       // [width][height]
+
+//direction(направление)  движения
+int direction[4/*стороны*/][2/*x,y*/] = { /*налево*/{-1, 0}, /*направо*/{1, 0}, /*вниз*/{0, 1}, /*вверх*/{0, -1}};
+
+// из индекса в строчку вывода!
+string toString(int moveIndex)
+{
+    if(moveIndex == 0){
+        return "LEFT";
+    }else if(moveIndex == 1){
+        return "RIGHT";
+    }else if(moveIndex == 2){
+        return "DOWN";
+    }else if(moveIndex == 3){
+        return "UP";
+    }
+    cerr << "toString не должны попасть сюда " << endl;
+    return "UP";
+}
+
+//свободна ли (free) точка, куда мы двинем
+bool isFree(int x, int y, int moveIndex){
+        int newX = x + direction[moveIndex][0];
+        int newY = y + direction[moveIndex][1];
+        // TODO закоментить вывод.
+        // где-то кроется дефект, потому оставил вывод
+        cerr << x << "  " << y << "  " << moveIndex << " " << newX << "  " << newY << endl;
+        // проверка на границы
+        if( newX < 0 || newX > 29 ){
+            return false;
+        }
+        if( newY < 0 || newY > 19 ){
+            return false;
+        }
+
+        // если занято уже кем-то
+        if(pole[newX][newY]!=0){
+            return false;
+        }
+        return true;
+}
+
+// движемся!
+string lets_move(Player& player)
+{
+    // двигаем в прежнем направлении, если можем
+    if(isFree(player.x, player.y, player.moveIndex)){
+        return toString(player.moveIndex);
+    }
+
+    //TODO придумать что-то поумней =)
+    // выбираем пока тупо какое-то из тех направлений, какое можем =)
+    for(int i=0; i < 4; i++){
+        if(isFree(player.x, player.y, i)){
+            player.moveIndex = i;
+            return toString(i);
+        }
+    }
+
+    cerr << "lets_move не должны попасть сюда " << endl;
+    player.moveIndex = 0;
+    return toString(0);
+}
 
 // cout << "UP" << endl; // A single line with UP, DOWN, LEFT or RIGHT
 // Write an action using cout. DON'T FORGET THE "<< endl"
@@ -25,7 +91,6 @@ int main()
     int X1; // starting X coordinate of lightcycle (can be the same as X0 if you play before this player)
     int Y1; // starting Y coordinate of lightcycle (can be the same as Y0 if you play before this player)
 
-    int pole[20][30] = { };       // [height][width]
     int PX = -100;
     int PY = -100;
     int move = 0;
@@ -43,18 +108,29 @@ int main()
 
         for (int i = 0; i < N; i++) {
             cin >> X0 >> Y0 >> X1 >> Y1; cin.ignore();
+
             // инициализируем i-го игрока.
             players[i].x = X1;
-            players[i].y = y1;
+            players[i].y = Y1;
             // меняем 0 на доске, на id игрока.
-            pole[Y1][X1] = i + 1;
+            pole[X1][Y1] = i + 1;
 
             // ВЫВОД игрока (Убрать в функцию)
             if (P == i) {
                 cerr << " -----THIS MY----- " << P << endl << endl;
+                // TODO может можно тут поумней как-то
+                // сначала двигаем в случайном направлении
+                if(move==1){
+                    players[P].moveIndex = rand() % 4;
+                }
             }
             else {
                 cerr << " ---ENEMY--- " << endl << endl;
+                // TODO перед присваиванием
+                // players[i].x = X1;
+                // players[i].y = Y1;
+                // мы можем вычислить moveIndex на любом ходе, кроме первого, т.к. знаем предыдущие координаты
+                // x  == players[i].x   y == players[i].y
             }
 
             cerr << "Player " << i << " Now_X " << players[i].x << endl;
@@ -62,146 +138,14 @@ int main()
         }
 
         // ВЫВОД поля (Убрать в функцию)
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 30; j++) {
-                cerr << pole[i][j] << " ";
+        for (int y = 0; y < 20; y++) {
+            for (int x = 0; x < 30; x++) {
+                cerr << pole[x][y] << " ";
             }
             cerr << endl;
         }
-        // Проинициализируем для совместимости прежние переменные.
-        PX = players[P].x;
-        PY = players[P].y;
 
-        if (PX <= 2)
-        {
-            if (PY <= 2)    // if |_ 1
-            {
-                cerr << "if |_ 1" << endl;
-                cout << "RIGHT" << endl;
-                PX += 1;
-                cout << "UP" << endl;
-                PY += 1;
-
-                continue;
-            }
-
-            if (PY >= 3 && PY <= 17)   // if | 1
-            {
-                cerr << "if | 1" << endl;
-                cout << "DOWN" << endl;
-                PY -= 1;
-                continue;
-            }
-
-            if (PY >= 18)   // if |‾ 1
-            {
-                cerr << "if | 1" << endl;
-                cout << "RIGHT" << endl;
-                PX += 1;
-                cout << "DOWN" << endl;
-                PY -= 1;
-                continue;
-            }
-
-        }
-
-        if (PX >= 28)
-        {
-            if (PY <= 2)    // if ‾| 2
-            {
-                cerr << "if ‾| 2" << endl;
-                cout << "LEFT" << endl;
-                PX -= 1;
-                cout << "DOWN" << endl;
-                PY -= 1;
-                continue;
-            }
-
-            if (PY >= 3 && PY <= 17)   // if | 2
-            {
-                cerr << "if | 2" << endl;
-                cout << "UP" << endl;
-                PY += 1;
-                continue;
-            }
-
-            if (PY >= 18)   // if _|  2
-            {
-                cerr << "if _|  2" << endl;
-                cout << "LEFT" << endl;
-                PX -= 1;
-                cout << "UP" << endl;
-                PY += 1;
-                continue;
-            }
-        }
-
-
-        //hs
-        if (PX >= 3 && PX <= 27)
-        {
-            if (PY >= 18)   // if _  3
-            {
-                cerr << "if _  3" << endl;
-                if (PX <= 4) {
-                    cout << "LEFT" << endl;
-                    PX -= 1;
-                }
-                if (PX >= 26) {
-                    cout << "RIGHT" << endl;
-                    PX += 1;
-                }
-
-                continue;
-            }
-            if (PY <= 2)    // if ‾ 3
-            {
-                cerr << "if ‾ 3" << endl;
-                if (PX <= 4) {
-                    cout << "LEFT" << endl;
-                    PX -= 1;
-                }
-                if (PX >= 26) {
-                    cout << "RIGHT" << endl;
-                    PX += 1;
-                }
-            }
-
-            cerr << "default" << endl;     // pofig
-            cout << "RIGHT" << endl;
-            PX += 1;
-            continue;
-            //------------alg presledovaniya no otstoy
-            /*
-            if(PX < X1){
-                cout << "RIGHT" << endl;
-                PX+=1;
-                if(PY < Y1){
-                    cout << "UP" << endl;
-                    PY+=1;
-                    continue;
-                }
-                if(PY > Y1){
-                    cout << "DOWN" << endl;
-                    PY-=1;
-                    continue;
-                }
-            }
-            if(PX > X1){
-                cout << "LEFT" << endl;
-                PX-=1;
-                if(PY < Y1){
-                    cout << "UP" << endl;
-                    PY+=1;
-                    continue;
-                }
-                if(PY > Y1){
-                    cout << "DOWN" << endl;
-                    PY-=1;
-                    continue;
-                }
-            }
-            //*/
-        }
+        string m = lets_move(players[P]);
+        cout << m << endl;
     }
 }
