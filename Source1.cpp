@@ -5,30 +5,32 @@
 
 using namespace std;
 
-class Player{
-    public:
-        int x;
-        int y;
-        int moveIndex;
+class Player {
+public:
+    int x;
+    int y;
+    int moveIndex;
 };
 
-
 // глобальные переменные ЗЛО! НО очень удобны для таких мелких программ =)
-int pole[30/*x*/][20/*y*/] = { };       // [width][height]
+int pole[30 /*x*/][20 /*y*/] = {}; // [width][height]
 
 //direction(направление)  движения
-int direction[4/*стороны*/][2/*x,y*/] = { /*налево*/{-1, 0}, /*направо*/{1, 0}, /*вниз*/{0, 1}, /*вверх*/{0, -1}};
+int direction[4 /*стороны*/][2 /*x,y*/] = { /*налево*/ { -1, 0 }, /*направо*/ { 1, 0 }, /*вниз*/ { 0, 1 }, /*вверх*/ { 0, -1 } };
 
 // из индекса в строчку вывода!
 string toString(int moveIndex)
 {
-    if(moveIndex == 0){
+    if (moveIndex == 0) {
         return "LEFT";
-    }else if(moveIndex == 1){
+    }
+    else if (moveIndex == 1) {
         return "RIGHT";
-    }else if(moveIndex == 2){
+    }
+    else if (moveIndex == 2) {
         return "DOWN";
-    }else if(moveIndex == 3){
+    }
+    else if (moveIndex == 3) {
         return "UP";
     }
     cerr << "toString не должны попасть сюда " << endl;
@@ -36,39 +38,40 @@ string toString(int moveIndex)
 }
 
 //свободна ли (free) точка, куда мы двинем
-bool isFree(int x, int y, int moveIndex){
-        int newX = x + direction[moveIndex][0];
-        int newY = y + direction[moveIndex][1];
-        // TODO закоментить вывод.
-        // где-то кроется дефект, потому оставил вывод
-        cerr << x << "  " << y << "  " << moveIndex << " " << newX << "  " << newY << endl;
-        // проверка на границы
-        if( newX < 0 || newX > 29 ){
-            return false;
-        }
-        if( newY < 0 || newY > 19 ){
-            return false;
-        }
+bool isFree(int x, int y, int moveIndex)
+{
+    int newX = x + direction[moveIndex][0];
+    int newY = y + direction[moveIndex][1];
+    // TODO закоментить вывод.
+    // где-то кроется дефект, потому оставил вывод
+    cerr << x << "  " << y << "  " << moveIndex << " " << newX << "  " << newY << endl;
+    // проверка на границы
+    if (newX < 0 || newX > 29) {
+        return false;
+    }
+    if (newY < 0 || newY > 19) {
+        return false;
+    }
 
-        // если занято уже кем-то
-        if(pole[newX][newY]!=0){
-            return false;
-        }
-        return true;
+    // если занято уже кем-то
+    if (pole[newX][newY] != 0) {
+        return false;
+    }
+    return true;
 }
 
 // движемся!
 string lets_move(Player& player)
 {
     // двигаем в прежнем направлении, если можем
-    if(isFree(player.x, player.y, player.moveIndex)){
+    if (isFree(player.x, player.y, player.moveIndex)) {
         return toString(player.moveIndex);
     }
 
     //TODO придумать что-то поумней =)
     // выбираем пока тупо какое-то из тех направлений, какое можем =)
-    for(int i=0; i < 4; i++){
-        if(isFree(player.x, player.y, i)){
+    for (int i = 0; i < 4; i++) {
+        if (isFree(player.x, player.y, i)) {
             player.moveIndex = i;
             return toString(i);
         }
@@ -102,12 +105,15 @@ int main()
         move++;
         int N; // total number of players (2 to 4).
         int P; // your player number (0 to 3).
-        cin >> N >> P; cin.ignore();
-        cerr << "STEP " << move << endl << endl;
+        cin >> N >> P;
+        cin.ignore();
+        cerr << "STEP " << move << endl
+             << endl;
         //cerr << "Наш Player "<< P << endl;
 
         for (int i = 0; i < N; i++) {
-            cin >> X0 >> Y0 >> X1 >> Y1; cin.ignore();
+            cin >> X0 >> Y0 >> X1 >> Y1;
+            cin.ignore();
 
             // инициализируем i-го игрока.
             players[i].x = X1;
@@ -117,15 +123,17 @@ int main()
 
             // ВЫВОД игрока (Убрать в функцию)
             if (P == i) {
-                cerr << " -----THIS MY----- " << P << endl << endl;
+                cerr << " -----THIS MY----- " << P << endl
+                     << endl;
                 // TODO может можно тут поумней как-то
                 // сначала двигаем в случайном направлении
-                if(move==1){
+                if (move == 1) {
                     players[P].moveIndex = rand() % 4;
                 }
             }
             else {
-                cerr << " ---ENEMY--- " << endl << endl;
+                cerr << " ---ENEMY--- " << endl
+                     << endl;
                 // TODO перед присваиванием
                 // players[i].x = X1;
                 // players[i].y = Y1;
