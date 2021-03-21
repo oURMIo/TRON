@@ -18,6 +18,16 @@ int pole[30 /*x*/][20 /*y*/] = {}; // [width][height]
 //direction(направление)  движения
 int direction[4 /*стороны*/][2 /*x,y*/] = { /*налево*/ { -1, 0 }, /*направо*/ { 1, 0 }, /*вниз*/ { 0, 1 }, /*вверх*/ { 0, -1 } };
 
+int output_mas()        //just output mas
+{
+    for (int y = 0; y < 20; y++) {
+        for (int x = 0; x < 30; x++) {
+            cerr << pole[x][y] << " ";
+        }
+        cerr << endl;
+    }
+}
+
 // из индекса в строчку вывода!
 string toString(int moveIndex)
 {
@@ -61,7 +71,7 @@ bool isFree(int x, int y, int moveIndex)
 }
 
 // движемся!
-string lets_move(Player& player)
+string fist_strat(Player& player)
 {
     // двигаем в прежнем направлении, если можем
     if (isFree(player.x, player.y, player.moveIndex)) {
@@ -82,6 +92,31 @@ string lets_move(Player& player)
     return toString(0);
 }
 
+
+string move_index(Player& player,int index) {
+    player.moveIndex = index;
+    return toString(index);
+}
+
+bool prov = true;
+
+string lets_move(Player& player)     //1 strata
+{
+    if (prov == true)
+    {
+        if (player.y < 10 && isFree(player.x, player.y, 2))
+            return move_index(player,2);
+        if (player.y > 10 && isFree(player.x, player.y, 3))
+            return move_index(player, 3);
+        if (player.x < 15 && isFree(player.x, player.y, 1))
+            return move_index(player, 1);
+        if (player.x > 15 && isFree(player.x, player.y, 0))
+            return move_index(player, 0);
+        prov = false;
+    }
+
+    return fist_strat(player);
+}
 // cout << "UP" << endl; // A single line with UP, DOWN, LEFT or RIGHT
 // Write an action using cout. DON'T FORGET THE "<< endl"
 // To debug: cerr << "Debug messages..." << endl;
@@ -110,11 +145,13 @@ int main()
         cerr << "STEP " << move << endl
              << endl;
         //cerr << "Наш Player "<< P << endl;
-
         for (int i = 0; i < N; i++) {
             cin >> X0 >> Y0 >> X1 >> Y1;
             cin.ignore();
 
+            //просваивание в начале координат
+            if (move==1)
+                pole[X0][Y0] = i + 1;
             // инициализируем i-го игрока.
             players[i].x = X1;
             players[i].y = Y1;
@@ -146,14 +183,9 @@ int main()
         }
 
         // ВЫВОД поля (Убрать в функцию)
-        for (int y = 0; y < 20; y++) {
-            for (int x = 0; x < 30; x++) {
-                cerr << pole[x][y] << " ";
-            }
-            cerr << endl;
-        }
+        output_mas();
 
-        string m = lets_move(players[P]);
-        cout << m << endl;
+        //string m = lets_move(players[P]);
+        cout << lets_move(players[P]) << endl;
     }
 }
