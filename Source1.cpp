@@ -223,13 +223,13 @@ string lets_move(Player& player)     //1 strata
 {
     if (prov)
     {
-        if (player.y < 10 && isFree(player.x, player.y, DOWN))
+        if (player.y < 10 && player.canDown())
             return player.down();
-        if (player.y > 10 && isFree(player.x, player.y, UP))
+        if (player.y > 10 && player.canUp())
             return player.up();
-        if (player.x < 15 && isFree(player.x, player.y, RIGHT))
+        if (player.x < 15 && player.canRight())
             return player.right();
-        if (player.x > 15 && isFree(player.x, player.y, LEFT))
+        if (player.x > 15 && player.canLeft())
             return player.left();
         cerr << "НА ЦЕНТРЕ, ПОЙДЁМ ДАЛЕЕ" << endl;
         prov = false;
