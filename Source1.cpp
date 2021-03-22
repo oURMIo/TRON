@@ -5,23 +5,87 @@
 
 using namespace std;
 
+enum Dir{ LEFT, RIGHT, DOWN, UP};
+//direction(направление)  движения
+int direction[4 /*стороны*/][2 /*x,y*/] = { /*налево*/ { -1, 0 }, /*направо*/ { 1, 0 }, /*вниз*/ { 0, 1 }, /*вверх*/ { 0, -1 } };
+
+extern string toString(Dir dirIndex);
+extern bool isFree(int x, int y, int dirIndex);
+
 class Player {
 public:
     int x;
     int y;
-    int moveIndex;
+    Dir dirIndex;
+    
+    string dir_index(Dir dir)
+    {
+        dirIndex = dir;
+        return toString(dir);
+    }
+
+    string dir_index(int index)
+    {
+        return dir_index(static_cast<Dir>(index));
+    }
+
+    bool isUp()
+    {
+        return UP == dirIndex;
+    }
+    bool isDown()
+    {
+        return DOWN == dirIndex;
+    }
+    bool isLeft()
+    {
+        return LEFT == dirIndex;
+    }
+    bool isRight()
+    {
+        return RIGHT == dirIndex;
+    }
+
+    string up()
+    {
+        return dir_index(UP);
+    }
+    string down()
+    {
+        return dir_index(DOWN);
+    }
+    string right()
+    {
+        return dir_index(RIGHT);
+    }
+    string left()
+    {
+        return dir_index(LEFT);
+    }
+
+    bool canUp(){
+        return isFree(x, y, UP);
+    }
+    bool canDown(){
+        return isFree(x, y, DOWN);
+    }
+    bool canLeft(){
+        return isFree(x, y, LEFT);
+    }
+    bool canRight(){
+        return isFree(x, y, RIGHT);
+    }
+
 };
+
 
 // глобальные переменные ЗЛО! НО очень удобны для таких мелких программ =)
 int pole[30 /*x*/][20 /*y*/] = {}; // [width][height]
 
 // раз может быть от 2 до 4 - создадим массив на всех!
 Player players[4];
+
 const std::string null = "";    //trash)
-
-
-//direction(направление)  движения
-int direction[4 /*стороны*/][2 /*x,y*/] = { /*налево*/ { -1, 0 }, /*направо*/ { 1, 0 }, /*вниз*/ { 0, 1 }, /*вверх*/ { 0, -1 } };
 
 int output_mas()        //just output mas
 {
@@ -34,18 +98,18 @@ int output_mas()        //just output mas
 }
 
 // из индекса в строчку вывода!
-string toString(int moveIndex)
+string toString(Dir dirIndex)
 {
-    if (moveIndex == 0) {
+    if (dirIndex == LEFT) {
         return "LEFT";
     }
-    else if (moveIndex == 1) {
+    else if (dirIndex == RIGHT) {
         return "RIGHT";
     }
-    else if (moveIndex == 2) {
+    else if (dirIndex == DOWN) {
         return "DOWN";
     }
-    else if (moveIndex == 3) {
+    else if (dirIndex == UP) {
         return "UP";
     }
     cerr << "toString не должны попасть сюда " << endl;
@@ -53,13 +117,13 @@ string toString(int moveIndex)
 }
 
 //свободна ли (free) точка, куда мы двинем
-bool isFree(int x, int y, int moveIndex)
+bool isFree(int x, int y, int dirIndex)
 {
-    int newX = x + direction[moveIndex][0];
-    int newY = y + direction[moveIndex][1];
+    int newX = x + direction[dirIndex][0];
+    int newY = y + direction[dirIndex][1];
     // TODO закоментить вывод.
     // где-то кроется дефект, потому оставил вывод
-    cerr << x << "  " << y << "  " << moveIndex << " " << newX << "  " << newY << endl;
+    cerr << x << "  " << y << "  " << dirIndex << " " << newX << "  " << newY << endl;
     // проверка на границы
     if (newX < 0 || newX > 29) {
         return false;
@@ -75,40 +139,33 @@ bool isFree(int x, int y, int moveIndex)
     return true;
 }
 
+
 // движемся!
 string fist_strat(Player& player)   //
 {
     // двигаем в прежнем направлении, если можем
-    if (isFree(player.x, player.y, player.moveIndex)) {
-        return toString(player.moveIndex);
+    if (isFree(player.x, player.y, player.dirIndex)) {
+        return toString(player.dirIndex);
     }
 
     //TODO придумать что-то поумней =)
     // выбираем пока тупо какое-то из тех направлений, какое можем =)
     for (int i = 0; i < 4; i++) {
         if (isFree(player.x, player.y, i)) {
-            player.moveIndex = i;
-            return toString(i);
+            return player.dir_index(i);
         }
     }
 
     cerr << "lets_move не должны попасть сюда " << endl;
-    player.moveIndex = 0;
-    return toString(0);
+    return player.left();
 }
-
-string move_index(Player& player,int index) {
-    player.moveIndex = index;
-    return toString(index);
-}
-  
 
 // 2-я страта но я не знаю как ее вставить туда
 string two_strat(Player& player)        //0-left / 1-right / 2-down / 3-up
 {
     return null;
     int rastvp, rastleft, rastright, s_left,s_right;
-    if (player.moveIndex == 3)
+    if (player.isUp())
     {
         rastvp = player.y;
         rastleft = player.x;
@@ -116,42 +173,42 @@ string two_strat(Player& player)        //0-left / 1-right / 2-down / 3-up
         s_left = rastvp * rastleft;
         s_right = rastvp * rastright;
         if (rastleft >= rastright)
-            return move_index(player, 0);
+            return player.left();
         else
-            return move_index(player, 1);
+            return player.down();
     }
 
-    if (player.moveIndex == 2)
+    if (player.isDown())
     {
         rastvp = 20 - player.y;
         rastleft = 30 - player.x;
         rastright = player.x;
         if (rastleft >= rastright)
-            return move_index(player, 0);
+            return player.left();
         else
-            return move_index(player, 1);
+            return player.right();
     }
 
-    if (player.moveIndex == 1)
+    if (player.isRight())
     {
         rastvp = 30 - player.x;
         rastleft = player.y;
         rastright = 20 - player.y;
         if (rastleft >= rastright)
-            return move_index(player, 0);
+            return player.left();
         else
-            return move_index(player, 1);
+            return player.right();
     }
 
-    if (player.moveIndex == 0)
+    if (player.isLeft())
     {
         rastvp = player.x;
         rastleft = 20 - player.y;
         rastright = player.y;
         if (rastleft >= rastright)
-            return move_index(player, 0);
+            return player.left();
         else
-            return move_index(player, 1);
+            return player.right();
     }
 
     cerr << endl << "приплыли" << endl;
@@ -166,66 +223,71 @@ string lets_move(Player& player)     //1 strata
 {
     if (prov)
     {
-        if (player.y < 10 && isFree(player.x, player.y, 2))
-            return move_index(player,2);
-        if (player.y > 10 && isFree(player.x, player.y, 3))
-            return move_index(player, 3);
-        if (player.x < 15 && isFree(player.x, player.y, 1))
-            return move_index(player, 1);
-        if (player.x > 15 && isFree(player.x, player.y, 0))
-            return move_index(player, 0);
+        if (player.y < 10 && isFree(player.x, player.y, DOWN))
+            return player.down();
+        if (player.y > 10 && isFree(player.x, player.y, UP))
+            return player.up();
+        if (player.x < 15 && isFree(player.x, player.y, RIGHT))
+            return player.right();
+        if (player.x > 15 && isFree(player.x, player.y, LEFT))
+            return player.left();
+        cerr << "НА ЦЕНТРЕ, ПОЙДЁМ ДАЛЕЕ" << endl;
         prov = false;
     }
 
-    
+
     if (prov2) {
-        Player& enemy = player;     //enemy
+        Player* enemyPointer;     //enemy
         for (int i = 0; i < 4; i++) {
             if (players[i].x != player.x || players[i].y != player.y) {
-                enemy = players[i];
+                enemyPointer = &players[i];
+                cerr << "враг найден : на поле закрашен как  " << i + 1 << endl;
                 break;
             }
         }
+        Player &enemy = *enemyPointer;
+        int diffX = enemy.x - player.x;
+        int diffY = enemy.y - player.y;
         // враг справа
-        if (player.x <= enemy.x) 
+        if (diffX > 0)
         {
             cerr << "PROVERKA1" << endl;
-
-            if (player.y <= enemy.y)    //враг сверху
+            if (diffY < 0)    //враг сверху
             {
-                if (enemy.moveIndex == 0 && enemy.moveIndex == 3)
-                    return move_index(player, 3);
-                if (enemy.moveIndex == 1 && enemy.moveIndex == 2)
-                    return move_index(player, 1);
+                if (enemy.isLeft() || enemy.isUp())
+                {
+                    cerr << " enemy moves to the left or up" << "  | we up" << endl;
+                    player.up();
+                    return fist_strat(player);
+                }
+                if (enemy.isRight() || enemy.isDown()){
+                    cerr << " enemy moves to the right or down" << "  | we right" << endl;
+                    if(player.canRight())
+                        return player.right();
+                    else if(player.canUp())
+                        return player.up();
+                }
             }
             else    // враг снизу
             {
-                if (enemy.moveIndex == 0 && enemy.moveIndex == 2)
-                    return move_index(player, 2);
-                if (enemy.moveIndex == 3 && enemy.moveIndex == 1)
-                    return move_index(player, 1);
+                if (enemy.isLeft()  || enemy.isDown())
+                {
+                    cerr << " enemy moves to the left or down" << "  | we down" << endl;
+                    if(player.canDown())
+                        return player.down();
+                }
+                if (enemy.isRight() || enemy.isUp())
+                {
+                    cerr << " enemy moves to the right or up" << "  | we right" << endl;
+                    if(player.canRight())
+                        return player.right();
+                }
             }
         }
         else
-        {/*
-            if (player.y <= enemy.y)    //враг сверху
-            {
-                if (enemy.moveIndex == 1 && enemy.moveIndex == 3)
-                    return move_index(player, 3);
-                if (enemy.moveIndex == 1 && enemy.moveIndex == 2)
-                    return move_index(player, 1);
-            }
-            else    // враг снизу
-            {
-                if (enemy.moveIndex == 0 && enemy.moveIndex == 2)
-                    return move_index(player, 2);
-                if (enemy.moveIndex == 3 && enemy.moveIndex == 1)
-                    return move_index(player, 1);
-            }
-            */
-
+        {
         }
-
+        cerr << "НАКРЫТИЕ ВСЁ covering off" <<  diffX << " " << diffY << endl;
         prov2 = false;
     }
 
@@ -252,6 +314,8 @@ int main()
     int X1, Y1; // starting X,Y coordinate of lightcycle (can be the same as X0 if you play before this player)
     int PX = -100, PY = -100;
     int move = 0;
+      /* initialize random seed: */
+      srand (time(NULL));
 
     while (1) {
         move++;
@@ -275,24 +339,24 @@ int main()
             else
             {
                 // пошёл влево
-                if (players[i].x > X1) 
+                if (players[i].x > X1)
                 {
-                    players[i].moveIndex = 0;
+                    players[i].left();
                 }
-                else if (players[i].x < X1) 
+                else if (players[i].x < X1)
                 {
                     // пошёл вправо
-                    players[i].moveIndex = 1;
+                    players[i].right();
                 }
-                else if (players[i].y < Y1) 
+                else if (players[i].y < Y1)
                 {
                     // вниз
-                    players[i].moveIndex = 2;
+                    players[i].down();
                 }
-                else if (players[i].y > Y1) 
+                else if (players[i].y > Y1)
                 {
                     // вверх
-                    players[i].moveIndex = 3;
+                    players[i].up();
                 }
             }
             // инициализируем i-го игрока.
@@ -306,16 +370,11 @@ int main()
                 // TODO может можно тут поумней как-то
                 // сначала двигаем в случайном направлении
                 if (move == 1) {
-                    players[P].moveIndex = rand() % 4;
+                    players[P].dirIndex = static_cast<Dir>(rand() % 4);
                 }
             }
             else {
                 cerr << " ---ENEMY--- " << endl << endl;
-                // TODO перед присваиванием
-                // players[i].x = X1;
-                // players[i].y = Y1;
-                // мы можем вычислить moveIndex на любом ходе, кроме первого, т.к. знаем предыдущие координаты
-                // x  == players[i].x   y == players[i].y
             }
 
             cerr << "Player " << i << " Now_X " << players[i].x << endl;
