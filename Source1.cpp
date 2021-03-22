@@ -92,13 +92,64 @@ string fist_strat(Player& player)
     return toString(0);
 }
 
-
 string move_index(Player& player,int index) {
     player.moveIndex = index;
     return toString(index);
 }
 
 bool prov = true;
+
+// 2-я страта но я не знаю как ее вставить туда
+string two_strat(Player& player)        //0-left / 1-right / 2-down / 3-up
+{
+    int rastvp, rastleft, rastright;
+    //last_move не объявлена и вообще не знаю куда ее засунать
+    if (last_move == "UP")
+    {
+        rastvp = player.y;
+        rastleft = player.x;
+        rastright = 30 - player.x;
+        if rastleft >= rastright)
+            return move_index(player, 0);
+        else
+            return move_index(player, 1);
+    }
+
+    if (last_move == "DOWN")
+    {
+        rastvp = 20 - player.y;
+        rastleft = 30 - player.x;
+        rastright = player.x;
+        if rastleft >= rastright)
+            return move_index(player, 0);
+        else
+            return move_index(player, 1);
+    }
+
+    if (last_move == "RIGHT")
+    {
+        rastvp = 30 - player.x;
+        rastleft = player.y;
+        rastright = 20 - player.y;
+        if rastleft >= rastright)
+            return move_index(player, 0);
+        else
+            return move_index(player, 1);
+    }
+
+    if (last_move == "LEFT")
+    {
+        rastvp = player.x;
+        rastleft = 20 - player.y;
+        rastright = player.y;
+        if rastleft >= rastright)
+            return move_index(player, 0);
+        else
+            return move_index(player, 1);
+    }
+    cerr << endl << "приплыли" << endl;
+}
+
 
 string lets_move(Player& player)     //1 strata
 {
@@ -118,19 +169,13 @@ string lets_move(Player& player)     //1 strata
     return fist_strat(player);
 }
 // cout << "UP" << endl; // A single line with UP, DOWN, LEFT or RIGHT
-// Write an action using cout. DON'T FORGET THE "<< endl"
-// To debug: cerr << "Debug messages..." << endl;
 
 int main()
 {
     // game loop
-    int X0; // starting X coordinate of lightcycle (or -1)
-    int Y0; // starting Y coordinate of lightcycle (or -1)
-    int X1; // starting X coordinate of lightcycle (can be the same as X0 if you play before this player)
-    int Y1; // starting Y coordinate of lightcycle (can be the same as Y0 if you play before this player)
-
-    int PX = -100;
-    int PY = -100;
+    int X0, Y0; // starting X,Y coordinate of lightcycle (or -1)
+    int X1, Y1; // starting X,Y coordinate of lightcycle (can be the same as X0 if you play before this player)
+    int PX = -100, PY = -100;
     int move = 0;
 
     // раз может быть от 2 до 4 - создадим массив на всех!
@@ -142,26 +187,27 @@ int main()
         int P; // your player number (0 to 3).
         cin >> N >> P;
         cin.ignore();
-        cerr << "STEP " << move << endl
-             << endl;
-        //cerr << "Наш Player "<< P << endl;
+        cerr << "STEP " << move << endl << endl;
         for (int i = 0; i < N; i++) {
             cin >> X0 >> Y0 >> X1 >> Y1;
             cin.ignore();
 
             //просваивание в начале координат
-            if (move==1)
+            if (move == 1)
+            {
                 pole[X0][Y0] = i + 1;
+
+                players[i].x = X0;      //omega присваивани
+                players[i].y = Y0;
+            }
             // инициализируем i-го игрока.
             players[i].x = X1;
             players[i].y = Y1;
             // меняем 0 на доске, на id игрока.
             pole[X1][Y1] = i + 1;
 
-            // ВЫВОД игрока (Убрать в функцию)
             if (P == i) {
-                cerr << " -----THIS MY----- " << P << endl
-                     << endl;
+                cerr << " -----THIS MY----- " << P << endl << endl;
                 // TODO может можно тут поумней как-то
                 // сначала двигаем в случайном направлении
                 if (move == 1) {
@@ -169,8 +215,7 @@ int main()
                 }
             }
             else {
-                cerr << " ---ENEMY--- " << endl
-                     << endl;
+                cerr << " ---ENEMY--- " << endl << endl;
                 // TODO перед присваиванием
                 // players[i].x = X1;
                 // players[i].y = Y1;
@@ -182,10 +227,9 @@ int main()
             cerr << "Player " << i << " Now_Y " << players[i].y << endl;
         }
 
-        // ВЫВОД поля (Убрать в функцию)
+        // ВЫВОД поля
         output_mas();
 
-        //string m = lets_move(players[P]);
         cout << lets_move(players[P]) << endl;
     }
 }
