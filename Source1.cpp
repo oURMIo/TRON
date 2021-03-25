@@ -9,6 +9,8 @@ enum Dir{ LEFT, RIGHT, DOWN, UP};
 //direction(направление)  движения
 int direction[4 /*стороны*/][2 /*x,y*/] = { /*налево*/ { -1, 0 }, /*направо*/ { 1, 0 }, /*вниз*/ { 0, 1 }, /*вверх*/ { 0, -1 } };
 
+const std::string null = "";    //trash)
+
 extern string toString(Dir dirIndex);
 extern bool isFree(int x, int y, int dirIndex);
 
@@ -45,24 +47,6 @@ public:
     {
         return RIGHT == dirIndex;
     }
-
-    string up()
-    {
-        return dir_index(UP);
-    }
-    string down()
-    {
-        return dir_index(DOWN);
-    }
-    string right()
-    {
-        return dir_index(RIGHT);
-    }
-    string left()
-    {
-        return dir_index(LEFT);
-    }
-
     bool canUp(){
         return isFree(x, y, UP);
     }
@@ -76,6 +60,23 @@ public:
         return isFree(x, y, RIGHT);
     }
 
+    string up()
+    {
+        return canUp() ? dir_index(UP) : null;
+    }
+    string down()
+    {
+        return canDown() ? dir_index(DOWN) : null;
+    }
+    string right()
+    {
+        return canRight() ? dir_index(RIGHT) : null;
+    }
+    string left()
+    {
+        return canLeft() ? dir_index(LEFT) : null;
+    }
+
 };
 
 
@@ -85,7 +86,6 @@ int pole[30 /*x*/][20 /*y*/] = {}; // [width][height]
 // раз может быть от 2 до 4 - создадим массив на всех!
 Player players[4];
 
-const std::string null = "";    //trash)
 
 int output_mas()        //just output mas
 {
@@ -163,19 +163,20 @@ string fist_strat(Player& player)   //
 // 2-я страта но я не знаю как ее вставить туда
 string two_strat(Player& player)        //0-left / 1-right / 2-down / 3-up
 {
-    return null;
+//    return null;
+    cerr << " НАЧАЛАСЬ ФИГНЯ" << ;
     int rastvp, rastleft, rastright, s_left,s_right;
     if (player.isUp())
     {
         rastvp = player.y;
         rastleft = player.x;
         rastright = 30 - player.x;
-        s_left = rastvp * rastleft;
+        s_left = rastvp * rastleft;     //rast
         s_right = rastvp * rastright;
         if (rastleft >= rastright)
             return player.left();
         else
-            return player.down();
+            return player.right();
     }
 
     if (player.isDown())
@@ -195,7 +196,7 @@ string two_strat(Player& player)        //0-left / 1-right / 2-down / 3-up
         rastleft = player.y;
         rastright = 20 - player.y;
         if (rastleft >= rastright)
-            return player.left();
+            return player.up();
         else
             return player.right();
     }
@@ -206,9 +207,9 @@ string two_strat(Player& player)        //0-left / 1-right / 2-down / 3-up
         rastleft = 20 - player.y;
         rastright = player.y;
         if (rastleft >= rastright)
-            return player.left();
+            return player.up();
         else
-            return player.right();
+            return player.down();
     }
 
     cerr << endl << "приплыли" << endl;
@@ -257,15 +258,15 @@ string lets_move(Player& player)     //1 strata
                 if (enemy.isLeft() || enemy.isUp())
                 {
                     cerr << " enemy moves to the left or up" << "  | we up" << endl;
-                    player.up();
-                    return fist_strat(player);
+                    if (player.canUp())
+                        return player.up();
+                    //return fist_strat(player);
                 }
                 if (enemy.isRight() || enemy.isDown()){
                     cerr << " enemy moves to the right or down" << "  | we right" << endl;
                     if(player.canRight())
                         return player.right();
-                    else if(player.canUp())
-                        return player.up();
+                    //return fist_strat(player);
                 }
             }
             else    // враг снизу
@@ -275,24 +276,61 @@ string lets_move(Player& player)     //1 strata
                     cerr << " enemy moves to the left or down" << "  | we down" << endl;
                     if(player.canDown())
                         return player.down();
+                    //return fist_strat(player);
                 }
                 if (enemy.isRight() || enemy.isUp())
                 {
                     cerr << " enemy moves to the right or up" << "  | we right" << endl;
                     if(player.canRight())
                         return player.right();
+                    //return fist_strat(player);
                 }
             }
         }
         else
         {
+            cerr << "PROVERKA2" << endl;
+            if (diffY < 0)    //враг сверху
+            {
+                if (enemy.isRight() || enemy.isUp())
+                {
+                    cerr << " enemy moves to the right or up" << "  | we up" << endl;
+                    if (player.canUp())
+                        return player.up();
+                    //return fist_strat(player);
+                }
+                if (enemy.isLeft() || enemy.isDown()) {
+                    cerr << " enemy moves to the left or down" << "  | we right" << endl;
+                    if (player.canRight())
+                        return player.right();
+                    //return fist_strat(player);
+                }
+            }
+            else    // враг снизу
+            {
+                if (enemy.isLeft() || enemy.isUp())
+                {
+                    cerr << " enemy moves to the left or up" << "  | we left" << endl;
+                    if (player.canLeft())
+                        return player.left();
+                    //return fist_strat(player);
+                }
+                if (enemy.isRight() || enemy.isDown())
+                {
+                    cerr << " enemy moves to the right or dowт" << "  | we down" << endl;
+                    if (player.canDown())
+                        return player.down();
+                    //return fist_strat(player);
+                }
+            }
+
+
         }
         cerr << "НАКРЫТИЕ ВСЁ covering off" <<  diffX << " " << diffY << endl;
         prov2 = false;
     }
 
-    //return fist_strat(player);
-    //return two_strat(player);
+
     string result = two_strat(player);
     if (result == null)
     {
