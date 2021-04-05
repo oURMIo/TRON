@@ -163,8 +163,8 @@ string fist_strat(Player& player)   //
 // 2-я страта но я не знаю как ее вставить туда
 string two_strat(Player& player)        //0-left / 1-right / 2-down / 3-up
 {
-//    return null;
-    cerr << " НАЧАЛАСЬ ФИГНЯ" << ;
+    //return null;
+    cerr << " НАЧАЛАСЬ ФИГНЯ" << endl;
     int rastvp, rastleft, rastright, s_left,s_right;
     if (player.isUp())
     {
@@ -222,6 +222,7 @@ bool prov2 = true;
 
 string lets_move(Player& player)     //1 strata
 {
+    bool first_on_center = false;
     if (prov)
     {
         if (player.y < 10 && player.canDown())
@@ -232,12 +233,14 @@ string lets_move(Player& player)     //1 strata
             return player.right();
         if (player.x > 15 && player.canLeft())
             return player.left();
-        cerr << "НА ЦЕНТРЕ, ПОЙДЁМ ДАЛЕЕ" << endl;
+        cerr << "НА ЦЕНТРЕ, ПОЙДЁМ ДАЛЕЕ" << endl << endl;
+        first_on_center = true;
         prov = false;
     }
 
 
     if (prov2) {
+        cerr << " 2.2 СТРАТА НАКРЫТИЕ " << endl << endl;
         Player* enemyPointer;     //enemy
         for (int i = 0; i < 4; i++) {
             if (players[i].x != player.x || players[i].y != player.y) {
@@ -246,13 +249,14 @@ string lets_move(Player& player)     //1 strata
                 break;
             }
         }
+
         Player &enemy = *enemyPointer;
         int diffX = enemy.x - player.x;
         int diffY = enemy.y - player.y;
         // враг справа
         if (diffX > 0)
         {
-            cerr << "PROVERKA1" << endl;
+            cerr << "PROVERKA_2.2" << endl;
             if (diffY < 0)    //враг сверху
             {
                 if (enemy.isLeft() || enemy.isUp())
@@ -266,7 +270,13 @@ string lets_move(Player& player)     //1 strata
                     cerr << " enemy moves to the right or down" << "  | we right" << endl;
                     if(player.canRight())
                         return player.right();
-                    //return fist_strat(player);
+                    if (first_on_center)
+                    {
+                        if (player.canUp())
+                        {
+                            return player.up();
+                        }
+                    }
                 }
             }
             else    // враг снизу
@@ -326,7 +336,7 @@ string lets_move(Player& player)     //1 strata
 
 
         }
-        cerr << "НАКРЫТИЕ ВСЁ covering off" <<  diffX << " " << diffY << endl;
+        cerr << "НАКРЫТИЕ ВСЁ covering off  " <<  diffX << " " << diffY << endl;
         prov2 = false;
     }
 
@@ -334,12 +344,12 @@ string lets_move(Player& player)     //1 strata
     string result = two_strat(player);
     if (result == null)
     {
-        cerr << "LOOLLOOL" << endl;
+        cerr << "return fist strat" << endl;
         return fist_strat(player);
     }
     else
     {
-        cerr << "222222222LOOLLOOL" << endl;
+        cerr << "2 strat" << endl;
         return result;
     }
 }
@@ -420,7 +430,7 @@ int main()
         }
 
         // ВЫВОД поля
-        output_mas();
+        //output_mas();
 
         cout << lets_move(players[P]) << endl;
     }
