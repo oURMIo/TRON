@@ -90,9 +90,6 @@ int P; // your player number (0 to 3).
 // глобальные переменные ЗЛО! НО очень удобны для таких мелких программ =)
 int pole[30 /*x*/][20 /*y*/] = {}; // [width][height]
 
-// раз может быть от 2 до 4 - создадим массив на всех!
-Player players[4];
-
 
 int output_mas()        //just output mas
 {
@@ -195,8 +192,8 @@ string fist_strat(Player& player)   //
     int mi = -1;
     int score = -1;
 
-    if (isFree(player.x, player.y, player.moveIndex)) {
-        mi = player.moveIndex;
+    if (isFree(player.x, player.y, player.dirIndex)) {
+        mi = player.dirIndex;
         score = calc_score(player.x, player.y, mi);
         cerr << " __ " << mi << " __ " << score << endl;
     }
@@ -213,13 +210,12 @@ string fist_strat(Player& player)   //
     }
 
     if(mi > -1){
-        player.moveIndex = mi;
-        return toString(mi);
+        return player.dir_index(mi);
     }
 
     cerr << "lets_move не должны попасть сюда " << endl;
-    player.moveIndex = 0;
-    return toString(0);
+    player.dirIndex = UP;
+    return toString(player.dirIndex);
 }
 
 string first(Player& player)
@@ -244,7 +240,7 @@ string first(Player& player)
 // 2-я страта но я не знаю как ее вставить туда
 string two_strat(Player& player)        //0-left / 1-right / 2-down / 3-up
 {
-    //return null;
+    return null;
     cerr << " НАЧАЛАСЬ ФИГНЯ" << endl;
     int rastvp, rastleft, rastright, s_left,s_right;
     if (player.isUp())
