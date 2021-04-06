@@ -241,7 +241,7 @@ string first(Player& player)
 string two_strat(Player& player)        //0-left / 1-right / 2-down / 3-up
 {
     return null;
-    cerr << " НАЧАЛАСЬ ФИГНЯ" << endl;
+    cerr << "           НАЧАЛАСЬ ФИГНЯ          " << endl;
     int rastvp, rastleft, rastright, s_left,s_right;
     if (player.isUp())
     {
@@ -310,14 +310,14 @@ string lets_move(Player& player)     //1 strata
             return player.right();
         if (player.x > 15 && player.canLeft())
             return player.left();
-        cerr << "НА ЦЕНТРЕ, ПОЙДЁМ ДАЛЕЕ" << endl << endl;
+        cerr << endl << endl << "/////       НА ЦЕНТРЕ, ПОЙДЁМ ДАЛЕЕ        /////" << endl << endl;
         first_on_center = true;
         prov = false;
     }
 
 
     if (prov2) {
-        cerr << " 2.2 СТРАТА НАКРЫТИЕ " << endl << endl;
+        cerr << endl <<"   2.0 СТРАТА НАКРЫТИЕ    " << endl;
         Player* enemyPointer;     //enemy
         for (int i = 0; i < 4; i++) {
             if (players[i].x != player.x || players[i].y != player.y) {
@@ -333,14 +333,22 @@ string lets_move(Player& player)     //1 strata
         // враг справа
         if (diffX > 0)
         {
-            cerr << "PROVERKA_2.2" << endl;
+            cerr << "       враг справо     " << endl;
             if (diffY < 0)    //враг сверху
             {
+                cerr << "       враг сверху     " << endl;
                 if (enemy.isLeft() || enemy.isUp())
                 {
                     cerr << " enemy moves to the left or up" << "  | we up" << endl;
                     if (player.canUp())
                         return player.up();
+                    if (first_on_center)
+                    {
+                        if (player.canRight())
+                        {
+                            return player.right();
+                        }
+                    }
                     //return fist_strat(player);
                 }
                 if (enemy.isRight() || enemy.isDown()){
@@ -358,11 +366,19 @@ string lets_move(Player& player)     //1 strata
             }
             else    // враг снизу
             {
+                cerr << "       враг справо     " << endl;
                 if (enemy.isLeft()  || enemy.isDown())
                 {
                     cerr << " enemy moves to the left or down" << "  | we down" << endl;
                     if(player.canDown())
                         return player.down();
+                    if (first_on_center)
+                    {
+                        if (player.canLeft())
+                        {
+                            return player.left();
+                        }
+                    }
                     //return fist_strat(player);
                 }
                 if (enemy.isRight() || enemy.isUp())
@@ -370,36 +386,66 @@ string lets_move(Player& player)     //1 strata
                     cerr << " enemy moves to the right or up" << "  | we right" << endl;
                     if(player.canRight())
                         return player.right();
+                    if (first_on_center)
+                    {
+                        if (player.canUp())
+                        {
+                            return player.up();
+                        }
+                    }
                     //return fist_strat(player);
                 }
             }
         }
-        else
+        else    //враг слево
         {
-            cerr << "PROVERKA2" << endl;
+            cerr << "       враг слево      " << endl;
             if (diffY < 0)    //враг сверху
             {
+                cerr << "       враг сверху     " << endl;
                 if (enemy.isRight() || enemy.isUp())
                 {
                     cerr << " enemy moves to the right or up" << "  | we up" << endl;
                     if (player.canUp())
                         return player.up();
-                    //return fist_strat(player);
+                    if (first_on_center)
+                    {
+                        if (player.canLeft())
+                        {
+                            return player.left();
+                        }
+                    }
                 }
-                if (enemy.isLeft() || enemy.isDown()) {
+                if (enemy.isLeft() || enemy.isDown()) 
+                {
                     cerr << " enemy moves to the left or down" << "  | we right" << endl;
                     if (player.canRight())
                         return player.right();
+                    if (first_on_center)
+                    {
+                        if (player.canDown())
+                        {
+                            return player.down();
+                        }
+                    }
                     //return fist_strat(player);
                 }
             }
             else    // враг снизу
             {
+                cerr << "       враг снизу     " << endl;
                 if (enemy.isLeft() || enemy.isUp())
                 {
                     cerr << " enemy moves to the left or up" << "  | we left" << endl;
                     if (player.canLeft())
                         return player.left();
+                    if (first_on_center)
+                    {
+                        if (player.canUp())
+                        {
+                            return player.up();
+                        }
+                    }
                     //return fist_strat(player);
                 }
                 if (enemy.isRight() || enemy.isDown())
@@ -407,13 +453,21 @@ string lets_move(Player& player)     //1 strata
                     cerr << " enemy moves to the right or dowт" << "  | we down" << endl;
                     if (player.canDown())
                         return player.down();
+                    if (first_on_center)
+                    {
+                        if (player.canRight())
+                        {
+                            return player.right();
+                        }
+                    }
                     //return fist_strat(player);
                 }
             }
-
-
         }
-        cerr << "НАКРЫТИЕ ВСЁ covering off  " <<  diffX << " " << diffY << endl;
+
+        cerr << "////////////////////////////////////////////////" << endl;
+        cerr << "/////       НАКРЫТИЕ ВСЁ covering off      /////" << diffX << " " << diffY << endl;
+        cerr << "////////////////////////////////////////////////" << endl;
         prov2 = false;
     }
 
