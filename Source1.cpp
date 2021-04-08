@@ -219,28 +219,26 @@ string two_strat(Player& player)        //0-left / 1-right / 2-down / 3-up
 
 bool prov = true;
 bool prov2 = true;
+bool first_on_center = false;
 
-string lets_move(Player& player)     //1 strata
+string to_mid(Player& player)   // к центру движ
 {
-    bool first_on_center = false;
-    if (prov)
-    {
-        if (player.y < 10 && player.canDown())
-            return player.down();
-        if (player.y > 10 && player.canUp())
-            return player.up();
-        if (player.x < 15 && player.canRight())
-            return player.right();
-        if (player.x > 15 && player.canLeft())
-            return player.left();
-        cerr << endl << endl << "/////       НА ЦЕНТРЕ, ПОЙДЁМ ДАЛЕЕ        /////" << endl << endl;
-        first_on_center = true;
-        prov = false;
-    }
+    if (player.y < 10 && player.canDown())
+        return player.down();
+    if (player.y > 10 && player.canUp())
+        return player.up();
+    if (player.x < 15 && player.canRight())
+        return player.right();
+    if (player.x > 15 && player.canLeft())
+        return player.left();
+    cerr << endl << endl << "/////       НА ЦЕНТРЕ, ПОЙДЁМ ДАЛЕЕ        /////" << endl << endl;
+    prov=false;
+    return null;
+}
 
-
-    if (prov2) {
-        cerr << endl <<"   2.0 СТРАТА НАКРЫТИЕ    " << endl;
+string covering(Player& player)        // накрытин
+{
+    cerr << endl <<"   2.0 СТРАТА НАКРЫТИЕ    " << endl;
         Player* enemyPointer;     //enemy
         for (int i = 0; i < 4; i++) {
             if (players[i].x != player.x || players[i].y != player.y) {
@@ -389,9 +387,28 @@ string lets_move(Player& player)     //1 strata
         }
 
         cerr << "////////////////////////////////////////////////" << endl;
-        cerr << "/////       НАКРЫТИЕ ВСЁ covering off      /////" << diffX << " " << diffY << endl;
+        cerr << "/////       НАКРЫТИЕ ВСЁ covering off      /////" << endl;
         cerr << "////////////////////////////////////////////////" << endl;
         prov2 = false;
+        return null;
+}
+
+
+string lets_move(Player& player)     //     обродотчик движения
+{
+    first_on_center = false;
+    if (prov)       // выглядит фигово но работает
+    {
+        if(to_mid(player)!=null)
+            return to_mid(player);
+        else
+            first_on_center = true;     
+    }
+    
+    if (prov2)      // накрытие)
+    {
+        if(covering(player) != null)
+            return covering(player);        
     }
 
 
@@ -407,8 +424,9 @@ string lets_move(Player& player)     //1 strata
         return result;
     }
 }
-// cout << "UP" << endl; // A single line with UP, DOWN, LEFT or RIGHT
 
+
+// cout << "UP" << endl; // A single line with UP, DOWN, LEFT or RIGHT
 int main()
 {
     // game loop
