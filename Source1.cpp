@@ -394,6 +394,43 @@ string covering(Player& player)        // накрытин
 }
 
 
+/*
+    2   █   1
+    █████████
+    3   █   4
+
+*/
+// int cheak_chetver(int x, int y)
+// {
+//     if ( x >= 15 )      //справо
+//     {
+//         if ( y >= 10 )      //снизу
+//             return 4;
+//         else        //сверху
+//             return 1;        
+//     }
+//     else        //слево
+//     {
+//         if ( y >= 10 )      //снизу
+//             return 3;
+//         else        //сверху
+//             return 2;
+//     }
+//     cerr << "/////     АХТУНГ ЧЕТВЕРТЬ   /////" << endl;
+//     return 0;
+// }
+
+// string covering2(Player& player)
+// {
+//     Player* enemyP;     //enemy
+//     Player &enemy = *enemyP;
+//     if (cheak_chetver(enemy.x, enemy.y)
+//     {
+//         return;
+//     }
+
+// }
+
 string lets_move(Player& player)     //     обродотчик движения
 {
     first_on_center = false;
