@@ -55,6 +55,11 @@ public:
     bool canUp(){
         return isFree(x, y, UP);
     }
+
+	bool can(Dir dir){
+        return isFree(x, y, dir);
+    }
+
     bool canDown(){
         return isFree(x, y, DOWN);
     }
@@ -193,6 +198,67 @@ int calc_score(int x, int y, int moveIndex){
 }
 
 // движемся!
+string enemy_strat(Player& player)   //
+{
+    int eX = enemy.x - direction[enemy.dirIndex][0];
+    int eY = enemy.y - direction[enemy.dirIndex][1];
+
+	int diffX = eX - player.x;
+	int diffY = eY - player.y;
+
+	Dir dir[2] = {};
+
+	int i = 0;
+	if(abs(diffX) >= abs(diffY) ){
+		if(diffX > 0){
+			dir[i] = RIGHT;
+			i++;
+		}else if(diffX <0){
+			dir[i] = LEFT;
+			i++;
+		}
+		if(diffY > 0){
+			dir[i] = DOWN;
+			i++;
+		}else if(diffY < 0){
+			dir[i] =UP;
+			i++;
+		}else{
+            dir[i] = player.dirIndex;
+            i++;
+        }
+	}else if(abs(diffY)>= abs(diffX)){
+		if(diffY > 0){
+			dir[i] = DOWN;
+			i++;
+		}else if(diffY < 0){
+			dir[i] =UP;
+			i++;
+		}else {
+            dir[i] = player.dirIndex;
+			i++;
+        }
+		if(diffX > 0){
+			dir[i] = RIGHT;
+			i++;
+		}else if(diffX <0){
+			dir[i] = LEFT;
+			i++;
+		}else{
+            dir[i] = player.dirIndex;
+            i++;
+        }
+
+    }
+
+	for(int j=0; j<i;j++){
+		if(player.can(dir[j])){
+			return player.dir_index(dir[j]);
+		}
+	}
+	return null;
+}
+// движемся!
 string fist_strat(Player& player)   //
 {
     int mi = -1;
@@ -227,36 +293,29 @@ string fist_strat_m(Player& player)   //
 {
     int mi = -1;
     int score = -1;
-    long dist = 1000000;
-    long dd = 10000;
-    long dist_to_enemy[4];
+    bool was = true;
     // выбираем пока тупо какое-то из тех направлений, какое можем =)
     for (int i = 0; i < 4; i++) {
         if (isFree(player.x, player.y, i)) {
             int score_cand = calc_score(player.x, player.y, i);
 
-            int newX = player.x + direction[player.dirIndex][0];
-            int newY = player.y + direction[player.dirIndex][1];
-            dist_to_enemy[i] = abs(enemy.x - newX)+ abs (enemy.y - newY);
-            int d = abs(15 - newX)+ abs (10- newY);
-
-            if(score_cand > score ||
-                (score_cand == score && dist_to_enemy[i] < dist)
-                || (score_cand == score && dist_to_enemy[i] == dist
-                    && d < dd)){
+            if(score_cand > score){
+                was = false;
                 mi = i;
-                dd =d;
-                dist = dist_to_enemy[i];
                 score = score_cand;
                 cerr << " changed __ " << mi << " __ " << score << endl;
+            }else if (score_cand == score){
+                was = true;
             }
         }
     }
 
 
+
     if(mi > -1){
         return player.dir_index(mi);
     }
+
 
     cerr << "lets_move не должны попасть сюда " << endl;
     return player.dir_index(0);
@@ -573,10 +632,21 @@ string lets_move(Player& player)     //     обродотчик движени�
 //        return result;
 //    }
 
-if(player.move <200) {
-return fist_strat(player);
+// if(player.move <200) {
+//string mo = fist_strat_m(player);
+if(player.move > 50){
+    return fist_strat(player);
 }
-return fist_strat_m(player);
+string mo = enemy_strat(player);
+cerr << "enemy " << mo << endl;
+if(mo == null){
+    player.dirIndex = static_cast<Dir>(rand() % 4);
+    mo =  fist_strat(player);
+    cerr << " first strat mo " << mo << endl;
+}
+return mo;
+// }
+
 }
 
 
@@ -623,13 +693,13 @@ int main()
                 }
                 else if (players[i].y < Y1)
                 {
-                    // вниз
-                    players[i].down();
+                    // вверх
+                    players[i].up();
                 }
                 else if (players[i].y > Y1)
                 {
-                    // вверх
-                    players[i].up();
+                    // вниз
+                    players[i].down();
                 }
             }
             // инициализируем i-го игрока.
