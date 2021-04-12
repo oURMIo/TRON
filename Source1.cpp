@@ -202,11 +202,9 @@ string fist_strat(Player& player)   //
         mi = player.dirIndex;
         score = calc_score(player.x, player.y, mi);
         cerr << " __ " << mi << " __ " << score << endl;
-    }else {
-        return fist_strat_m(player);
     }
     // выбираем пока тупо какое-то из тех направлений, какое можем =)
-    for (int i = 0; i < 4; i++) {
+    for (int i = 3; i >= 0; i--) {
         if (isFree(player.x, player.y, i)) {
             int score_cand = calc_score(player.x, player.y, i);
             if(score_cand > score){
@@ -556,37 +554,6 @@ string covering(Player& player)        // накрытин
 
 string lets_move(Player& player)     //     обродотчик движения
 {
-   first_on_center = false;
-   if (prov && player.move < 20)       // выглядит фигово но работает
-   {
-       if(to_mid(player)!=null)
-           return to_mid(player);
-       else
-           first_on_center = true;
-           if(enemy.x > player.x && enemy.y > player.y){
-               player.dirIndex = RIGHT;
-               if(!isFree(player.x, player.y, player.dirIndex)){
-                   player.dirIndex = UP;
-               }
-           }else if(enemy.x > player.x && enemy.y < player.y){
-                player.dirIndex = RIGHT;
-               if(!isFree(player.x, player.y, player.dirIndex)){
-                   player.dirIndex = DOWN;
-               }
-
-           }else if(enemy.x < player.x && enemy.y < player.y){
-                player.dirIndex = LEFT;
-               if(!isFree(player.x, player.y, player.dirIndex)){
-                   player.dirIndex = DOWN;
-               }
-           }else if(enemy.x < player.x && enemy.y > player.y){
-                player.dirIndex = LEFT;
-               if(!isFree(player.x, player.y, player.dirIndex)){
-                   player.dirIndex = UP;
-               }
-           }
-   }
-
 //    if (prov2)      // накрытие)
 //    {
 //        if(covering(player) != null)
@@ -606,7 +573,7 @@ string lets_move(Player& player)     //     обродотчик движени�
 //        return result;
 //    }
 
-if(player.move % 5 == 0) {
+if(player.move <200) {
 return fist_strat(player);
 }
 return fist_strat_m(player);
