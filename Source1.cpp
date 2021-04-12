@@ -90,6 +90,7 @@ int P; // your player number (0 to 3).
 // глобальные переменные ЗЛО! НО очень удобны для таких мелких программ =)
 int pole[30 /*x*/][20 /*y*/] = {}; // [width][height]
 
+
 int output_mas()        //just output mas
 {
     for (int y = 0; y < 20; y++) {
@@ -191,8 +192,8 @@ string fist_strat(Player& player)   //
     int mi = -1;
     int score = -1;
 
-    if (isFree(player.x, player.y, player.moveIndex)) {
-        mi = player.moveIndex;
+    if (isFree(player.x, player.y, player.dirIndex)) {
+        mi = player.dirIndex;
         score = calc_score(player.x, player.y, mi);
         cerr << " __ " << mi << " __ " << score << endl;
     }
