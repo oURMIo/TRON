@@ -90,10 +90,6 @@ int P; // your player number (0 to 3).
 // глобальные переменные ЗЛО! НО очень удобны для таких мелких программ =)
 int pole[30 /*x*/][20 /*y*/] = {}; // [width][height]
 
-// раз может быть от 2 до 4 - создадим массив на всех!
-Player players[4];
-
-
 int output_mas()        //just output mas
 {
     for (int y = 0; y < 20; y++) {
@@ -213,13 +209,11 @@ string fist_strat(Player& player)   //
     }
 
     if(mi > -1){
-        player.moveIndex = mi;
-        return toString(mi);
+        return player.dir_index(mi);
     }
 
     cerr << "lets_move не должны попасть сюда " << endl;
-    player.moveIndex = 0;
-    return toString(0);
+    return player.dir_index(0);
 }
 
 string first(Player& player)
@@ -514,33 +508,34 @@ string covering(Player& player)        // накрытин
 
 string lets_move(Player& player)     //     обродотчик движения
 {
-    first_on_center = false;
-    if (prov)       // выглядит фигово но работает
-    {
-        if(to_mid(player)!=null)
-            return to_mid(player);
-        else
-            first_on_center = true;
-    }
-
-    if (prov2)      // накрытие)
-    {
-        if(covering(player) != null)
-            return covering(player);
-    }
-
-
-    string result = two_strat(player);
-    if (result == null)
-    {
-        cerr << "return fist strat" << endl;
-        return fist_strat(player);
-    }
-    else
-    {
-        cerr << "2 strat" << endl;
-        return result;
-    }
+//    first_on_center = false;
+//    if (prov)       // выглядит фигово но работает
+//    {
+//        if(to_mid(player)!=null)
+//            return to_mid(player);
+//        else
+//            first_on_center = true;
+//    }
+//
+//    if (prov2)      // накрытие)
+//    {
+//        if(covering(player) != null)
+//            return covering(player);
+//    }
+//
+//
+//    string result = two_strat(player);
+//    if (result == null)
+//    {
+//        cerr << "return fist strat" << endl;
+//        return fist_strat(player);
+//    }
+//    else
+//    {
+//        cerr << "2 strat" << endl;
+//        return result;
+//    }
+return fist_strat(player);
 }
 
 
