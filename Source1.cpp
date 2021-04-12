@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <algorithm>
 #include <queue>
 
 using namespace std;
@@ -12,11 +13,14 @@ int direction[4 /*стороны*/][2 /*x,y*/] = { /*налево*/ { -1, 0 }, /
 
 const std::string null = "";    //trash)
 
+
 extern string toString(Dir dirIndex);
 extern bool isFree(int x, int y, int dirIndex);
 
+
 class Player {
 public:
+    int move;
     int x;
     int y;
     Dir dirIndex;
@@ -80,9 +84,11 @@ public:
 
 };
 
+extern string fist_strat_m(Player& player);
 
 // раз может быть от 2 до 4 - создадим массив на всех!
 Player players[4];
+Player enemy;
 
 int N; // total number of players (2 to 4).
 int P; // your player number (0 to 3).
@@ -196,6 +202,8 @@ string fist_strat(Player& player)   //
         mi = player.dirIndex;
         score = calc_score(player.x, player.y, mi);
         cerr << " __ " << mi << " __ " << score << endl;
+    }else {
+        return fist_strat_m(player);
     }
     // выбираем пока тупо какое-то из тех направлений, какое можем =)
     for (int i = 0; i < 4; i++) {
@@ -208,6 +216,45 @@ string fist_strat(Player& player)   //
             }
         }
     }
+
+    if(mi > -1){
+        return player.dir_index(mi);
+    }
+
+    cerr << "lets_move не должны попасть сюда " << endl;
+    return player.dir_index(0);
+}
+
+string fist_strat_m(Player& player)   //
+{
+    int mi = -1;
+    int score = -1;
+    long dist = 1000000;
+    long dd = 10000;
+    long dist_to_enemy[4];
+    // выбираем пока тупо какое-то из тех направлений, какое можем =)
+    for (int i = 0; i < 4; i++) {
+        if (isFree(player.x, player.y, i)) {
+            int score_cand = calc_score(player.x, player.y, i);
+
+            int newX = player.x + direction[player.dirIndex][0];
+            int newY = player.y + direction[player.dirIndex][1];
+            dist_to_enemy[i] = abs(enemy.x - newX)+ abs (enemy.y - newY);
+            int d = abs(15 - newX)+ abs (10- newY);
+
+            if(score_cand > score ||
+                (score_cand == score && dist_to_enemy[i] < dist)
+                || (score_cand == score && dist_to_enemy[i] == dist
+                    && d < dd)){
+                mi = i;
+                dd =d;
+                dist = dist_to_enemy[i];
+                score = score_cand;
+                cerr << " changed __ " << mi << " __ " << score << endl;
+            }
+        }
+    }
+
 
     if(mi > -1){
         return player.dir_index(mi);
@@ -509,15 +556,37 @@ string covering(Player& player)        // накрытин
 
 string lets_move(Player& player)     //     обродотчик движения
 {
-//    first_on_center = false;
-//    if (prov)       // выглядит фигово но работает
-//    {
-//        if(to_mid(player)!=null)
-//            return to_mid(player);
-//        else
-//            first_on_center = true;
-//    }
-//
+   first_on_center = false;
+   if (prov && player.move < 20)       // выглядит фигово но работает
+   {
+       if(to_mid(player)!=null)
+           return to_mid(player);
+       else
+           first_on_center = true;
+           if(enemy.x > player.x && enemy.y > player.y){
+               player.dirIndex = RIGHT;
+               if(!isFree(player.x, player.y, player.dirIndex)){
+                   player.dirIndex = UP;
+               }
+           }else if(enemy.x > player.x && enemy.y < player.y){
+                player.dirIndex = RIGHT;
+               if(!isFree(player.x, player.y, player.dirIndex)){
+                   player.dirIndex = DOWN;
+               }
+
+           }else if(enemy.x < player.x && enemy.y < player.y){
+                player.dirIndex = LEFT;
+               if(!isFree(player.x, player.y, player.dirIndex)){
+                   player.dirIndex = DOWN;
+               }
+           }else if(enemy.x < player.x && enemy.y > player.y){
+                player.dirIndex = LEFT;
+               if(!isFree(player.x, player.y, player.dirIndex)){
+                   player.dirIndex = UP;
+               }
+           }
+   }
+
 //    if (prov2)      // накрытие)
 //    {
 //        if(covering(player) != null)
@@ -536,7 +605,11 @@ string lets_move(Player& player)     //     обродотчик движени�
 //        cerr << "2 strat" << endl;
 //        return result;
 //    }
+
+if(player.move % 5 == 0) {
 return fist_strat(player);
+}
+return fist_strat_m(player);
 }
 
 
@@ -605,9 +678,12 @@ int main()
                 if (move == 1) {
                     players[P].dirIndex = static_cast<Dir>(rand() % 4);
                 }
+                players[i].move = move;
             }
             else {
                 cerr << " ---ENEMY--- " << endl << endl;
+                enemy = players[i];
+                enemy.move = move;
             }
 
             cerr << "Player " << i << " Now_X " << players[i].x << endl;
