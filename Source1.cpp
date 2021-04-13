@@ -111,7 +111,9 @@ int output_mas()        //just output mas
         cerr << endl;
     }
 }
-
+string toString(int i){
+    return toString(static_cast<Dir>(i));
+}
 // из индекса в строчку вывода!
 string toString(Dir dirIndex)
 {
@@ -205,8 +207,7 @@ int calc_score(int x, int y)
         }
     }
 
-    cerr << " FINISHED " << x << ", " << y <<" ============= " << endl;
-    cerr  << queue.size() << "====== score = " << score << " ==" << endl;
+    cerr << " cs (" << x << ", " << y <<")  " << " = " << score << " " << endl;
     return score;
 }
 
@@ -226,76 +227,103 @@ string enemy_strat(Player& player)   //
 	Dir dir[2] = {};
 
 	int i = 0;
+	cerr << " s ";
 	if(abs(diffX) >= abs(diffY) ){
+	    cerr << " X ";
 		if(diffX > 0){
+		    cerr << " R ";
 			dir[i] = RIGHT;
 			i++;
 		}else if(diffX <0){
+		    cerr << " L ";
 			dir[i] = LEFT;
 			i++;
 		}
 		if(diffY > 0){
+		    cerr << " D ";
 			dir[i] = DOWN;
 			i++;
 		}else if(diffY < 0){
+		    cerr << " U ";
 			dir[i] =UP;
 			i++;
 		}else{
+		    cerr << " SAME ";
             dir[i] = player.dirIndex;
             i++;
         }
 	}else if(abs(diffY)>= abs(diffX)){
+	    cerr << " Y ";
 		if(diffY > 0){
+		    cerr << " D ";
 			dir[i] = DOWN;
 			i++;
 		}else if(diffY < 0){
+		    cerr << " U ";
 			dir[i] =UP;
 			i++;
 		}else {
+		    cerr << " SAME ";
             dir[i] = player.dirIndex;
 			i++;
         }
 		if(diffX > 0){
+		    cerr << " R ";
 			dir[i] = RIGHT;
 			i++;
 		}else if(diffX <0){
+		    cerr << " L ";
 			dir[i] = LEFT;
 			i++;
 		}else{
+		    cerr << " SAME ";
             dir[i] = player.dirIndex;
             i++;
         }
 
     }
+    cerr << endl;
 
     int score = 0;
-    int scores[4];
+    int scores[4] = {};
     int mi = -1;
+    int score_cand;
     for (int j = 0; j < 4; j++) {
-        if (isFree(player.x, player.y, j, true)) {
-           int score_cand = calc_score(player.x, player.y, j);
-           cerr << " es " << j << " sc " << score_cand << endl;
-           scores[j] = score_cand;
-                if(score_cand > score){
-                    mi = j;
-                    score = score_cand;
-                }
+        score_cand = calc_score(player.x, player.y, j);
+        if (isFree(player.x, player.y, j)) {
+           if (isFree(player.x, player.y, j, true)) {
+                score_cand  = score_cand + 10;
+                cerr << " es " << toString(j) << " sc " << score_cand;
+            }else {
+                cerr << " es1 " << toString(j) << " sc " << score_cand;
+            }
+            scores[j] = score_cand;
+            cerr << " sc ["<< j << "]=" <<  scores[j] << endl;
+            if(score_cand > score){
+                mi = j;
+                score = score_cand;
+                cerr << " new " << toString(j) << " sc " << score << endl;
             }
         }
-
-
+    }
 
     int score_max = score;
 
     Dir dir1 = static_cast<Dir>(mi);
     score = score_max;
 	for(int j=0; j<i;j++){
+	    cerr << "cand " << toString(dir[j]) << endl;
 		if(player.can(dir[j])){
-			int score_cand = scores[j] + 10;
+			score_cand = scores[dir[j]] + 10;
+			cerr <<  toString(dir[dir[j]]) <<" sc " << score_cand;
+			cerr << " sc ["<< j << "]=" <<  scores[j] << endl;
 			if(score_cand > score){
 			    dir1 = dir[j];
 			    score = score_cand;
+			    cerr <<  toString(dir[j]) <<"NEW sc " << score_cand << endl;
 			}
+		}else {
+            cerr <<  toString(dir[j]) <<" failed" << endl;
 		}
 	}
 	if(score > 0){
