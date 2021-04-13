@@ -187,7 +187,7 @@ int calc_score(int x, int y)
     Point t; t.x = x; t.y = y;
     queue.push(t);
 
-    while(!queue.empty() && score < 50){
+    while(!queue.empty() && score < 100){
         Point p = queue.front();
         queue.pop();
 
