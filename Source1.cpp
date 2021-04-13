@@ -132,13 +132,13 @@ string toString(Dir dirIndex)
 }
 
 //свободна ли (free) точка, куда мы двинем
-bool isFree(int x, int y, int dirIndex)
+bool isFree(int x, int y, int dirIndex, bool deeper)
 {
     int newX = x + direction[dirIndex][0];
     int newY = y + direction[dirIndex][1];
     // TODO закоментить вывод.
     // где-то кроется дефект, потому оставил вывод
-    cerr << x << "  " << y << "  " << dirIndex << " " << newX << "  " << newY << endl;
+  //  cerr << x << "  " << y << "  " << dirIndex << " " << newX << "  " << newY << endl;
     // проверка на границы
     if (newX < 0 || newX > 29) {
         return false;
@@ -151,7 +151,23 @@ bool isFree(int x, int y, int dirIndex)
     if (pole[newX][newY] != 0) {
         return false;
     }
+    if(!deeper){
+        return true;
+    }
+    // если узкий коридор туда нельзя ходить.
+    //enum Dir{ LEFT, RIGHT, DOWN, UP};
+    if((dirIndex == 0 || dirIndex == 1) && !isFree(x, y-1, dirIndex,false) && !isFree(x, y+1,dirIndex, false)){
+        return false;
+    }
+
+    if((dirIndex == 2 || dirIndex == 3) && !isFree(x-1, y,dirIndex, false) && !isFree(x+1, y, dirIndex,false)){
+        return false;
+    }
+
     return true;
+}
+bool isFree(int x, int y, int dirIndex){
+    return isFree(x, y, dirIndex,true);
 }
 
 struct Point {
@@ -184,12 +200,13 @@ int calc_score(int x, int y)
                 Point newP; newP.x = newX; newP.y = newY;
                 queue.push(newP);
                 pole_temp[newX][newY] = 1;
-                cerr << " ADD  ============= " << queue.size() << "======" << endl;
+             //   cerr << " ADD  ============= " << queue.size() << "======" << endl;
             }
         }
     }
 
-    cerr << " FINISHED  ============= " << queue.size() << "====== score = " << score << " ==" << endl;
+    cerr << " FINISHED " << x << ", " << y <<" ============= " << endl;
+    cerr  << queue.size() << "====== score = " << score << " ==" << endl;
     return score;
 }
 
@@ -251,18 +268,37 @@ string enemy_strat(Player& player)   //
 
     }
 
-
-    string dir1 = null;
     int score = 0;
+    int scores[4];
+    int mi = -1;
+    for (int j = 0; j < 4; j++) {
+        if (isFree(player.x, player.y, j)) {
+           int score_cand = calc_score(player.x, player.y, j);
+           scores[j] = score_cand;
+                if(score_cand > score){
+                    mi = j;
+                    score = score_cand;
+                    cerr << " changed __ " << mi << " __ " << score << endl;
+                }
+            }
+        }
+
+
+
+    int score_max = score;
+
+    Dir dir1 = static_cast<Dir>(mi);
+    score = score_max;
 	for(int j=0; j<i;j++){
 		if(player.can(dir[j])){
-			int score_cand = calc_score(player.x, player.y, dir[j]);
+			int score_cand = scores[j] + 10;
 			if(score_cand > score){
-			    dir1 = player.dir_index(dir[j]);
+			    dir1 = dir[j];
+			    score = score_cand;
 			}
 		}
 	}
-	return dir1;
+	return score > 0 ? player.dir_index(dir1) : null;
 }
 // движемся!
 string fist_strat(Player& player)   //
@@ -649,6 +685,7 @@ if(mo == null){
     player.dirIndex = static_cast<Dir>(rand() % 4);
     mo =  fist_strat(player);
     cerr << " first strat mo " << mo << endl;
+
 }
 return mo;
 // }
