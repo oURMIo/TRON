@@ -167,7 +167,7 @@ bool isFree(int x, int y, int dirIndex, bool deeper)
     return true;
 }
 bool isFree(int x, int y, int dirIndex){
-    return isFree(x, y, dirIndex,true);
+    return isFree(x, y, dirIndex,false);
 }
 
 struct Point {
@@ -272,13 +272,13 @@ string enemy_strat(Player& player)   //
     int scores[4];
     int mi = -1;
     for (int j = 0; j < 4; j++) {
-        if (isFree(player.x, player.y, j)) {
+        if (isFree(player.x, player.y, j, true)) {
            int score_cand = calc_score(player.x, player.y, j);
+           cerr << " es " << j << " sc " << score_cand << endl;
            scores[j] = score_cand;
                 if(score_cand > score){
                     mi = j;
                     score = score_cand;
-                    cerr << " changed __ " << mi << " __ " << score << endl;
                 }
             }
         }
@@ -298,7 +298,13 @@ string enemy_strat(Player& player)   //
 			}
 		}
 	}
-	return score > 0 ? player.dir_index(dir1) : null;
+	if(score > 0){
+	    string s = player.dir_index(dir1);
+	    cerr << "enemy_strat " << s <<  " score " << score << endl;
+	    return s;
+	}
+	cerr << " enemy strat no idea ";
+	return  null;
 }
 // движемся!
 string fist_strat(Player& player)   //
@@ -351,8 +357,6 @@ string fist_strat_m(Player& player)   //
             }
         }
     }
-
-
 
     if(mi > -1){
         return player.dir_index(mi);
@@ -676,16 +680,18 @@ string lets_move(Player& player)     //     обродотчик движени�
 
 // if(player.move <200) {
 //string mo = fist_strat_m(player);
-if(player.move > 50){
-    return fist_strat(player);
-}
+//if(player.move > 50){
+//    return fist_strat(player);
+//}
 string mo = enemy_strat(player);
 cerr << "enemy " << mo << endl;
 if(mo == null){
     player.dirIndex = static_cast<Dir>(rand() % 4);
-    mo =  fist_strat(player);
-    cerr << " first strat mo " << mo << endl;
-
+    mo =  fist_strat_m(player);
+    cerr << " first strat_m mo " << mo << endl;
+    if(mo == null){
+        return fist_strat(player);
+    }
 }
 return mo;
 // }
