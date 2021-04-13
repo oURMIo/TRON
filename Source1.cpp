@@ -315,7 +315,7 @@ string enemy_strat(Player& player)   //
 	    cerr << "cand " << toString(dir[j]) << endl;
 		if(player.can(dir[j])){
 			score_cand = scores[dir[j]] + 10;
-			cerr <<  toString(dir[dir[j]]) <<" sc " << score_cand;
+			cerr <<  toString(dir[j]) <<" sc " << score_cand;
 			cerr << " sc ["<< j << "]=" <<  scores[j] << endl;
 			if(score_cand > score){
 			    dir1 = dir[j];
