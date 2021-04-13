@@ -251,12 +251,18 @@ string enemy_strat(Player& player)   //
 
     }
 
+
+    string dir1 = null;
+    int score = 0;
 	for(int j=0; j<i;j++){
 		if(player.can(dir[j])){
-			return player.dir_index(dir[j]);
+			int score_cand = calc_score(player.x, player.y, dir[j]);
+			if(score_cand > score){
+			    dir1 = player.dir_index(dir[j]);
+			}
 		}
 	}
-	return null;
+	return dir1;
 }
 // движемся!
 string fist_strat(Player& player)   //
