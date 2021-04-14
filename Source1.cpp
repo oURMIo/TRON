@@ -816,11 +816,9 @@ int main()
                 our = players[i];
             }
             else {
-                cerr << " ---ENEMY--- " << i << endl << endl;                
-                // if(move == 1 || enemy.x == -1) {
-                    enemy = players[i];
-                    enemy.move = move;
-                // }
+                cerr << " ---ENEMY--- " << endl << endl;
+                enemy = players[i];
+                enemy.move = move;
             }
 
             cerr << "Player " << i << " Now_X " << players[i].x << endl;
