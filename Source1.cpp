@@ -222,7 +222,7 @@ int calc_cells(int x, int y, int maxCells)
     return score;
 }
 int calc_score(int x, int y) {
-	calc_cells(x, y, 100);
+	return calc_cells(x, y, 100);
 }
 
 int calc_score(int x, int y, int moveIndex) {
@@ -232,8 +232,10 @@ int calc_score(int x, int y, int moveIndex) {
 int calc_score(Player &player, int dir) {
 	// чтобы найти максимум для нашего игрока. найдём максимальные баллы за ход у нас и минимальные у противника.
 	int scoreMax = 0;
+    Point newP; newP.x = player.x + direction[dir][0]; newP.y = player.y + direction[dir][1];
+
 	// сколько свободных клеток у нашего игрока в заданном направлении ( макс 10 )
-	int score = calc_cells(player.x, player.y, dir, 10);
+	int score = calc_cells(newP.x, newP.y, 10);
 
 	if (score == 0) {
 		cerr << " cs no way" << endl;
@@ -244,7 +246,7 @@ int calc_score(Player &player, int dir) {
 	std::vector<Point> moves;
 
 	// притворимся, что сделали ход
-	Point newP; newP.x = x + direction[moveIndex][0]; newP.y = y + direction[moveIndex][1]; pole[newX][newY] = player.id; moves.push_back(newP);
+	pole[newP.x][newP.y] = player.id; moves.push_back(newP);
 
 	int enemiesSum = 0;
 	// players
@@ -258,7 +260,7 @@ int calc_score(Player &player, int dir) {
 			// enum Dir{ LEFT, RIGHT, DOWN, UP};
 			for (int k = 0; k < 4; ++k) {
 				// сколько свободных клеток у врага.
-				int curr = calc_cells(players[j].x, players[j].y, k, 10)
+				int curr = calc_cells(players[j].x + direction[k][0], players[j].y + direction[k][1], 10);
 				// если текущий ход для него наилучший - запоминаем.
 				if (curr > max) {
 					max = curr;
@@ -267,17 +269,10 @@ int calc_score(Player &player, int dir) {
 				sum = sum + curr;
 			}
 			// если враг никуда не может походить после нашего хода - сходим так. ( можно потом и улучшить )
-			if (sum == 0) {
-				// откатили все ходы
-				for(Point p: moves){
-					pole[p.x][p.y] = 0;
-				}
-				cerr << " cs закрываем " << player[j].id << "-го игрока"  << endl;
-				return 1000;
+			if (sum != 0) {
+				// враг ходит, как ему лучше
+				Point enP; enP.x = players[j].x + direction[maxDir][0]; enP.y = players[j].y + direction[maxDir][1]; pole[enP.x][enP.y] = players[j].id; moves.push_back(enP);
 			}
-
-			// враг ходит, как ему лучше
-			Point enP; enP.x = x + direction[moveIndex][0]; enP.y = y + direction[moveIndex][1]; pole[newX][newY] = player.id; moves.push_back(enP);
 
 			// добавляем к полной сумме от врагов - максимальный удачный ход противника.
 			enemiesSum = enemiesSum + max;
@@ -290,7 +285,7 @@ int calc_score(Player &player, int dir) {
 		score_after_enemy_move = score_after_enemy_move  + calc_cells(newP.x, newP.y, i);
 	}
 	// откатили все ходы
-	for(Point p: moves){
+	for (Point p : moves) {
 		pole[p.x][p.y] = 0;
 	}
 
@@ -386,7 +381,7 @@ string enemy_strat(Player& player)   //
     int mi = -1;
     int score_cand;
     for (int j = 0; j < 4; j++) {
-        score_cand = calc_score(player.x, player.y, j);
+        score_cand = calc_score(player, j);
         if (isFree(player.x, player.y, j)) {
            if (isFree(player.x, player.y, j, true)) {
                 score_cand  = score_cand + 10;
