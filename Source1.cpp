@@ -21,6 +21,7 @@ extern bool isFree(int x, int y, int dirIndex);
 class Player {
 public:
     int move;
+    int id;    
     int x;
     int y;
     Dir dirIndex;
@@ -94,6 +95,7 @@ extern string fist_strat_m(Player& player);
 // раз может быть от 2 до 4 - создадим массив на всех!
 Player players[4];
 Player enemy;
+Player our;
 
 int N; // total number of players (2 to 4).
 int P; // your player number (0 to 3).
@@ -136,26 +138,35 @@ string toString(Dir dirIndex)
 //свободна ли (free) точка, куда мы двинем
 bool isFree(int x, int y, int dirIndex, bool deeper)
 {
+    // cerr << endl << " isF ";
     int newX = x + direction[dirIndex][0];
     int newY = y + direction[dirIndex][1];
+    // cerr << " (" << newX << "," << newY << ") ";
     // TODO закоментить вывод.
     // где-то кроется дефект, потому оставил вывод
   //  cerr << x << "  " << y << "  " << dirIndex << " " << newX << "  " << newY << endl;
     // проверка на границы
     if (newX < 0 || newX > 29) {
+        // cerr << " x ";
         return false;
     }
     if (newY < 0 || newY > 19) {
+        // cerr << " y ";
         return false;
     }
 
-    // если занято уже кем-то
-    if (pole[newX][newY] != 0) {
+    int mark = pole[newX][newY];
+    // mark == 0 - пустой.
+    // mark 1 до 4 - player.id == индекс в массиве players + 1
+    if (mark  >= 1 && mark <= 4 && players[mark-1].x >-1){
+        // cerr << " pole busy " << pole[newX][newY];
         return false;
     }
     if(!deeper){
+        // cerr << endl;
         return true;
     }
+    // cerr << "deeper " << endl;
     // если узкий коридор туда нельзя ходить.
     //enum Dir{ LEFT, RIGHT, DOWN, UP};
     if((dirIndex == 0 || dirIndex == 1) && !isFree(x, y-1, dirIndex,false) && !isFree(x, y+1,dirIndex, false)){
@@ -224,7 +235,7 @@ string enemy_strat(Player& player)   //
 	int diffX = eX - player.x;
 	int diffY = eY - player.y;
 
-	Dir dir[2] = {};
+	Dir dir[3] = {};
 
 	int i = 0;
 	cerr << " s ";
@@ -249,7 +260,11 @@ string enemy_strat(Player& player)   //
 			i++;
 		}else{
 		    cerr << " SAME ";
-            dir[i] = player.dirIndex;
+		    cerr << " U ";
+			dir[i] =UP;
+			i++;
+            cerr << " D ";
+            dir[i] = DOWN;
             i++;
         }
 	}else if(abs(diffY)>= abs(diffX)){
@@ -312,15 +327,16 @@ string enemy_strat(Player& player)   //
     Dir dir1 = static_cast<Dir>(mi);
     score = score_max;
 	for(int j=0; j<i;j++){
-	    cerr << "cand " << toString(dir[j]) << endl;
+	    cerr << "cand " << j << " " << dir[j];
+	    cerr << " " << toString(dir[j]) << endl;
 		if(player.can(dir[j])){
 			score_cand = scores[dir[j]] + 10;
 			cerr <<  toString(dir[j]) <<" sc " << score_cand;
-			cerr << " sc ["<< j << "]=" <<  scores[j] << endl;
+			cerr << " sc ["<< dir[j] << "]=" <<  scores[dir[j]] << endl;
 			if(score_cand > score){
 			    dir1 = dir[j];
 			    score = score_cand;
-			    cerr <<  toString(dir[j]) <<"NEW sc " << score_cand << endl;
+			    cerr <<  toString(dir[j]) <<" NEW sc " << score_cand << endl;
 			}
 		}else {
             cerr <<  toString(dir[j]) <<" failed" << endl;
@@ -367,19 +383,21 @@ string fist_strat(Player& player)   //
 
 string fist_strat_m(Player& player)   //
 {
+    cerr << " fsm ";
     int mi = -1;
     int score = -1;
     bool was = true;
     // выбираем пока тупо какое-то из тех направлений, какое можем =)
     for (int i = 0; i < 4; i++) {
-        if (isFree(player.x, player.y, i)) {
+        if (isFree(player.x, player.y, i)) {            
             int score_cand = calc_score(player.x, player.y, i);
+            cerr << " " << toString(i) << " sc ";
 
             if(score_cand > score){
                 was = false;
                 mi = i;
                 score = score_cand;
-                cerr << " changed __ " << mi << " __ " << score << endl;
+                cerr << " NEW " << toString(mi) << " ";
             }else if (score_cand == score){
                 was = true;
             }
@@ -751,10 +769,12 @@ int main()
             //просваивание в начале координат
             if (move == 1)
             {
+                // 0 - пустой, i+1 - player.
                 pole[X0][Y0] = i + 1;
 
                 players[i].x = X0;      //omega присваивани
                 players[i].y = Y0;
+                players[i].id = i+1;
             }
             else
             {
@@ -793,11 +813,14 @@ int main()
                     players[P].dirIndex = static_cast<Dir>(rand() % 4);
                 }
                 players[i].move = move;
+                our = players[i];
             }
             else {
-                cerr << " ---ENEMY--- " << endl << endl;
-                enemy = players[i];
-                enemy.move = move;
+                cerr << " ---ENEMY--- " << i << endl << endl;                
+                // if(move == 1 || enemy.x == -1) {
+                    enemy = players[i];
+                    enemy.move = move;
+                // }
             }
 
             cerr << "Player " << i << " Now_X " << players[i].x << endl;
