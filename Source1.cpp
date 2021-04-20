@@ -817,8 +817,10 @@ int main()
             }
             else {
                 cerr << " ---ENEMY--- " << endl << endl;
-                enemy = players[i];
-                enemy.move = move;
+                if(move == 1 || players[i].x != -1) {
+                    enemy = players[i];
+                    enemy.move = move;
+                }
             }
 
             cerr << "Player " << i << " Now_X " << players[i].x << endl;
