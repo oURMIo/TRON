@@ -224,7 +224,7 @@ string enemy_strat(Player& player)   //
 	int diffX = eX - player.x;
 	int diffY = eY - player.y;
 
-	Dir dir[2] = {};
+	Dir dir[3] = {};
 
 	int i = 0;
 	cerr << " s ";
@@ -249,7 +249,11 @@ string enemy_strat(Player& player)   //
 			i++;
 		}else{
 		    cerr << " SAME ";
-            dir[i] = player.dirIndex;
+		    cerr << " U ";
+			dir[i] =UP;
+			i++;
+            cerr << " D ";
+            dir[i] = DOWN;
             i++;
         }
 	}else if(abs(diffY)>= abs(diffX)){
@@ -312,15 +316,16 @@ string enemy_strat(Player& player)   //
     Dir dir1 = static_cast<Dir>(mi);
     score = score_max;
 	for(int j=0; j<i;j++){
-	    cerr << "cand " << toString(dir[j]) << endl;
+	    cerr << "cand " << j << " " << dir[j];
+	    cerr << " " << toString(dir[j]) << endl;
 		if(player.can(dir[j])){
 			score_cand = scores[dir[j]] + 10;
 			cerr <<  toString(dir[j]) <<" sc " << score_cand;
-			cerr << " sc ["<< j << "]=" <<  scores[j] << endl;
+			cerr << " sc ["<< dir[j] << "]=" <<  scores[dir[j]] << endl;
 			if(score_cand > score){
 			    dir1 = dir[j];
 			    score = score_cand;
-			    cerr <<  toString(dir[j]) <<"NEW sc " << score_cand << endl;
+			    cerr <<  toString(dir[j]) <<" NEW sc " << score_cand << endl;
 			}
 		}else {
             cerr <<  toString(dir[j]) <<" failed" << endl;
