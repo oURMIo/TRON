@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <queue>
 
 using namespace std;
 
@@ -19,7 +20,7 @@ public:
     int x;
     int y;
     Dir dirIndex;
-    
+
     string dir_index(Dir dir)
     {
         dirIndex = dir;
@@ -80,11 +81,14 @@ public:
 };
 
 
-// глобальные переменные ЗЛО! НО очень удобны для таких мелких программ =)
-int pole[30 /*x*/][20 /*y*/] = {}; // [width][height]
-
 // раз может быть от 2 до 4 - создадим массив на всех!
 Player players[4];
+
+int N; // total number of players (2 to 4).
+int P; // your player number (0 to 3).
+
+// глобальные переменные ЗЛО! НО очень удобны для таких мелких программ =)
+int pole[30 /*x*/][20 /*y*/] = {}; // [width][height]
 
 
 int output_mas()        //just output mas
@@ -139,9 +143,82 @@ bool isFree(int x, int y, int dirIndex)
     return true;
 }
 
+struct Point {
+    int x;
+    int y;
+};
+
+
+int calc_score(int x, int y)
+{
+    int score = 0;
+    int pole_temp[30 /*x*/][20 /*y*/] = {}; // [width][height]
+
+    queue<Point> queue;
+    Point t; t.x = x; t.y = y;
+    queue.push(t);
+
+    while(!queue.empty() && score < 50){
+        Point p = queue.front();
+        queue.pop();
+
+        score++;
+
+        for(int i = 0; i < 4; i++){
+            int newX = p.x + direction[i][0];
+            int newY = p.y + direction[i][1];
+
+            if(isFree(p.x, p.y, i) && pole_temp[newX][newY] != 1)
+            {
+                Point newP; newP.x = newX; newP.y = newY;
+                queue.push(newP);
+                pole_temp[newX][newY] = 1;
+                cerr << " ADD  ============= " << queue.size() << "======" << endl;
+            }
+        }
+    }
+
+    cerr << " FINISHED  ============= " << queue.size() << "====== score = " << score << " ==" << endl;
+    return score;
+}
+
+int calc_score(int x, int y, int moveIndex){
+    return calc_score(x + direction[moveIndex][0], y + direction[moveIndex][1]);
+}
 
 // движемся!
 string fist_strat(Player& player)   //
+{
+    int mi = -1;
+    int score = -1;
+
+    if (isFree(player.x, player.y, player.dirIndex)) {
+        mi = player.dirIndex;
+        score = calc_score(player.x, player.y, mi);
+        cerr << " __ " << mi << " __ " << score << endl;
+    }
+    // выбираем пока тупо какое-то из тех направлений, какое можем =)
+    for (int i = 0; i < 4; i++) {
+        if (isFree(player.x, player.y, i)) {
+            int score_cand = calc_score(player.x, player.y, i);
+            if(score_cand > score){
+                mi = i;
+                score = score_cand;
+                cerr << " changed __ " << mi << " __ " << score << endl;
+            }
+        }
+    }
+
+    if(mi > -1){
+        return player.dir_index(mi);
+    }
+
+    cerr << "lets_move не должны попасть сюда " << endl;
+    player.dirIndex = UP;
+    return toString(player.dirIndex);
+}
+
+string first(Player& player)
 {
     // двигаем в прежнем направлении, если можем
     if (isFree(player.x, player.y, player.dirIndex)) {
@@ -476,8 +553,6 @@ int main()
 
     while (1) {
         move++;
-        int N; // total number of players (2 to 4).
-        int P; // your player number (0 to 3).
         cin >> N >> P;
         cin.ignore();
         cerr << "STEP " << move << endl << endl;
